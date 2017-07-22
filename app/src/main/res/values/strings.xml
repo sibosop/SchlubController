@@ -1,3 +1,21 @@
 <resources>
     <string name="app_name">SchlubController</string>
+    <string name="hLabel">Host:</string>
+    <string-array name="host_list">
+        <item>All</item>
+    </string-array>
+    <string name="master">Master:</string>
+    <string name="subnet">255.255.255</string>
+    <string name="volume">Volume: </string>
+    <string name="defMaster">102</string>
+    <string name="autoPlay">Auto Play</string>
+    <string name="shutdown">Shutdown</string>
+    <string name="stop">Stop</string>
+    <string name="reboot">Reboot</string>
+    <string name="refresh">Refresh Hostlist</string>
+    <string name="upgrade">Upgrade</string>
+    <string name="sound">Sound:</string>
+    <string name="auto">Auto</string>
+    <string name="phrase">Phrase:</string>
+    <string name="schlub">schlub</string>
 </resources>
