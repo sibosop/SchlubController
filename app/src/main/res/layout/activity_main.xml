@@ -4,15 +4,257 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.sibosop.schlubcontroller.MainActivity">
+    tools:context="com.sibosop.schlubcontroller.MainActivity"
+    tools:layout_editor_absoluteY="81dp"
+    tools:layout_editor_absoluteX="0dp">
 
-    <TextView
+    <EditText
+        android:id="@+id/masterLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_toStartOf="@+id/volumeValue"
+        android:focusable="false"
+        android:inputType="none"
+        android:text="@string/master"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="11dp"
+        android:layout_marginStart="16dp"
+        app:layout_constraintLeft_toLeftOf="parent" />
+
+    <EditText
+        android:id="@+id/MasterValue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/defMaster"
+        android:focusable="false"
+        android:inputType="numberDecimal"
+        app:layout_constraintTop_toTopOf="@+id/masterLabel"
+        android:layout_marginTop="8dp"
+        app:layout_constraintBottom_toBottomOf="@+id/masterLabel"
+        android:layout_marginBottom="0dp"
+        app:layout_constraintLeft_toRightOf="@+id/masterLabel"
+        android:layout_marginStart="27dp"
+        app:layout_constraintVertical_bias="1.0" />
+
+    <CheckBox
+        android:id="@+id/AutoPlay"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/autoPlay"
+        android:checked="true"
+        app:layout_constraintBottom_toBottomOf="@+id/MasterValue"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintTop_toTopOf="@+id/MasterValue"
+        android:layout_marginTop="8dp"
+        app:layout_constraintLeft_toRightOf="@+id/MasterValue"
+        android:layout_marginLeft="8dp" />
+
+    <EditText
+        android:id="@+id/HostLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:gravity="end"
+        android:layout_column="1"
+        android:layout_row="0"
+        android:focusable="false"
+        android:inputType="none"
+        android:text="@string/hLabel"
+        android:layout_marginStart="-15dp"
+        app:layout_constraintRight_toRightOf="@+id/masterLabel"
+        android:layout_marginTop="16dp"
+        app:layout_constraintTop_toBottomOf="@+id/masterLabel" />
+
+    <EditText
+        android:id="@+id/Subnet"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentTop="true"
+        android:layout_column="2"
+        android:layout_row="0"
+        android:focusable="false"
+        android:inputType="none"
+        android:text="@string/subnet"
+        android:visibility="visible"
+        app:layout_constraintTop_toTopOf="@+id/HostLabel"
+        android:layout_marginTop="8dp"
+        app:layout_constraintBottom_toBottomOf="@+id/HostLabel"
+        android:layout_marginBottom="0dp"
+        app:layout_constraintVertical_bias="1.0"
+        app:layout_constraintLeft_toRightOf="@+id/HostLabel"
+        android:layout_marginLeft="8dp" />
+
+    <Spinner
+        android:id="@+id/HostSpinner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentTop="true"
+        android:layout_column="3"
+        android:layout_row="0"
+        android:layout_toEndOf="@+id/Subnet"
+        android:entries="@array/host_list"
+        app:layout_constraintTop_toTopOf="@+id/Subnet"
+        android:layout_marginTop="8dp"
+        app:layout_constraintLeft_toRightOf="@+id/Subnet"
+        android:layout_marginLeft="8dp"
+        app:layout_constraintBottom_toBottomOf="@+id/Subnet"
+        android:layout_marginBottom="0dp"
+        app:layout_constraintVertical_bias="0.0" />
+
+
+
+
+    <EditText
+        android:id="@+id/volumeLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:focusable="false"
+        android:inputType="text"
+        android:text="@string/volume"
+        android:layout_marginLeft="-40dp"
+        app:layout_constraintLeft_toLeftOf="@+id/HostLabel"
+        android:layout_marginTop="0dp"
+        app:layout_constraintTop_toBottomOf="@+id/HostLabel" />
+
+    <EditText
+        android:id="@+id/volumeValue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/volumeLabel"
+        android:layout_alignBottom="@+id/volumeLabel"
+        android:layout_centerHorizontal="true"
+        android:inputType="number"
+        android:text="0"
+        app:layout_constraintTop_toTopOf="@+id/volumeLabel"
+        android:layout_marginTop="8dp"
+        app:layout_constraintBottom_toBottomOf="@+id/volumeLabel"
+        android:layout_marginBottom="0dp"
+        app:layout_constraintLeft_toRightOf="@+id/volumeLabel"
+        android:layout_marginLeft="5dp"
+        app:layout_constraintVertical_bias="1.0" />
+
+
+    <EditText
+        android:id="@+id/SoundLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:focusable="false"
+        android:inputType="none"
+        android:text="@string/sound"
+        android:layout_marginLeft="8dp"
+        app:layout_constraintLeft_toLeftOf="@+id/volumeLabel"
+        android:layout_marginRight="8dp"
+        app:layout_constraintRight_toRightOf="@+id/volumeLabel"
+        app:layout_constraintHorizontal_bias="0.833"
+        android:layout_marginTop="0dp"
+        app:layout_constraintTop_toBottomOf="@+id/volumeLabel" />
+
+    <EditText
+        android:id="@+id/SoundValue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="none"
+        android:text="@string/auto"
+        app:layout_constraintTop_toTopOf="@+id/SoundLabel"
+        android:layout_marginTop="8dp"
+        app:layout_constraintBottom_toBottomOf="@+id/SoundLabel"
+        android:layout_marginBottom="0dp"
+        app:layout_constraintVertical_bias="0.875"
+        app:layout_constraintLeft_toRightOf="@+id/SoundLabel"
+        android:layout_marginLeft="12dp" />
+
+    <EditText
+        android:id="@+id/PhraseLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:focusable="false"
+        android:inputType="textPersonName"
+        android:text="@string/phrase"
+        android:layout_marginLeft="-32dp"
+        app:layout_constraintLeft_toLeftOf="@+id/SoundLabel"
+        android:layout_marginTop="0dp"
+        app:layout_constraintTop_toBottomOf="@+id/SoundLabel" />
+
+    <EditText
+        android:id="@+id/PhraseValue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:inputType="textPersonName"
+        android:text="@string/schlub"
+        app:layout_constraintLeft_toRightOf="@+id/PhraseLabel"
+        android:layout_marginLeft="4dp"
+        app:layout_constraintBottom_toBottomOf="@+id/PhraseLabel"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintTop_toTopOf="@+id/PhraseLabel"
+        android:layout_marginTop="0dp"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <Button
+        android:id="@+id/shutdown"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/shutdown"
+        app:layout_constraintTop_toTopOf="@+id/reboot"
+        android:layout_marginTop="8dp"
+        app:layout_constraintBottom_toBottomOf="@+id/reboot"
+        android:layout_marginBottom="0dp"
+        app:layout_constraintLeft_toRightOf="@+id/reboot"
+        android:layout_marginLeft="6dp"
+        app:layout_constraintVertical_bias="1.0" />
+    <Button
+        android:id="@+id/reboot"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/reboot"
+        android:layout_marginTop="9dp"
+        app:layout_constraintTop_toBottomOf="@+id/PhraseLabel"
+        android:layout_marginLeft="5dp"
+        app:layout_constraintLeft_toLeftOf="parent" />
+
+    <Button
+        android:id="@+id/stop"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/stop"
+        app:layout_constraintBottom_toBottomOf="@+id/upgrade"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintTop_toTopOf="@+id/upgrade"
+        android:layout_marginTop="0dp"
+        app:layout_constraintVertical_bias="0.0"
+        app:layout_constraintLeft_toRightOf="@+id/upgrade"
+        android:layout_marginLeft="8dp" />
+
+    <Button
+        android:id="@+id/upgrade"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/upgrade"
+        app:layout_constraintTop_toTopOf="@+id/shutdown"
+        android:layout_marginTop="8dp"
+        app:layout_constraintBottom_toBottomOf="@+id/shutdown"
+        android:layout_marginBottom="0dp"
+        app:layout_constraintLeft_toRightOf="@+id/shutdown"
+        android:layout_marginLeft="-8dp"
+        app:layout_constraintVertical_bias="1.0" />
+
+    <Button
+        android:id="@+id/refreshHosts"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/refresh"
+        android:layout_marginLeft="8dp"
         app:layout_constraintLeft_toLeftOf="parent"
+        android:layout_marginRight="8dp"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_marginTop="8dp"
+        app:layout_constraintTop_toBottomOf="@+id/shutdown"
+        app:layout_constraintHorizontal_bias="0.502" />
+
+
 
 </android.support.constraint.ConstraintLayout>
