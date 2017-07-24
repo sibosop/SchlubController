@@ -10,6 +10,8 @@
 
 package com.solers.slp;
 
+import android.util.Log;
+
 import java.io.*;
 import java.util.*;
 import java.net.*;
@@ -82,7 +84,8 @@ class ServiceLocationEnumerationImpl
 	    transmitDatagram();
 	}
 	catch(IOException e) {
-	    throw new ServiceLocationException("Could not send message.",
+	   	Log.i("datagram",e.toString());
+		throw new ServiceLocationException("Could not send message.",
 					       ServiceLocationException.NETWORK_ERROR);
 	}
     }
