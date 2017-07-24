@@ -10,7 +10,13 @@ import java.util.List;
  */
 class HostInfo extends Object {
     String subnet ="";
-    List<String> ids = new ArrayList<String>();
+    String all;
+    List<String> ids = new ArrayList<>();
+
+    HostInfo(String a) {
+        super();
+        all = a;
+    }
     @Override
     public String toString() {
         String rval;
@@ -29,5 +35,6 @@ class HostInfo extends Object {
                 return Integer.valueOf(s1).compareTo(Integer.valueOf(s2));
             }
         });
+        ids.add(all);
     }
 }

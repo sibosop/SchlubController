@@ -1,10 +1,15 @@
 package com.sibosop.schlubcontroller;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.solers.slp.Locator;
@@ -25,8 +30,13 @@ import java.util.Vector;
 public class HostRefreshTask extends AsyncTask<Context,HostInfo,HostInfo> {
     private Locator loc;
     Vector scopes = new Vector();
-    HostRefreshTask() {
+    Activity mActivity;
+    HostRefreshTask(Activity activity) {
         super();
+        mActivity = activity;
+    }
+    @Override
+    protected HostInfo doInBackground(Context... contexts) {
         org.apache.log4j.BasicConfigurator.configure();
         org.apache.log4j.Category.getRoot().setPriority(org.apache.log4j.Priority.WARN);
         Properties p = new Properties();
@@ -46,11 +56,9 @@ public class HostRefreshTask extends AsyncTask<Context,HostInfo,HostInfo> {
             Log.i("slp",e.toString());
         }
         scopes.add("default");
-    }
-    @Override
-    protected HostInfo doInBackground(Context... contexts) {
-        HostInfo rval = new HostInfo();
+
         Resources r = contexts[0].getResources();
+        HostInfo rval = new HostInfo(r.getString(R.string.all));
         Log.i(r.getString(R.string.matag), r.getString(R.string.hostRefreshMessage));
         try {
             String selector = "";
@@ -92,7 +100,18 @@ public class HostRefreshTask extends AsyncTask<Context,HostInfo,HostInfo> {
     }
     @Override
     protected void onProgressUpdate(HostInfo... update) {
-        if (update.length > 0)
-            Log.i("onProgressUpate",update[0].toString());
+        if (update.length > 0) {
+            Log.i("onProgressUpate", update[0].toString());
+            final TextView subnetView = (TextView)mActivity.findViewById(R.id.Subnet);
+            subnetView.setText(update[0].subnet);
+            for (String i : update[0].ids ) {
+                Spinner spinner = (Spinner) mActivity.findViewById(R.id.HostSpinner);
+                ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(mActivity,
+                        android.R.layout.simple_spinner_item, update[0].ids);
+                spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                spinner.setAdapter(spinnerAdapter);
+            }
+        }
+
     }
 }

@@ -18,13 +18,12 @@ public class MainActivity extends AppCompatActivity {
                 setContentView(R.layout.activity_main);
             }
         });
-        new HostRefreshTask().execute(getBaseContext());
+        new HostRefreshTask(this).execute(getBaseContext());
         final View button = findViewById(R.id.refreshHosts);
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                new HostRefreshTask().execute(getBaseContext());
+                new HostRefreshTask(MainActivity.this).execute(getBaseContext());
             }
         });
     }
-
 }
