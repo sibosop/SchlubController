@@ -31,9 +31,11 @@ public class HostRefreshTask extends AsyncTask<Context,HostInfo,HostInfo> {
     private Locator loc;
     Vector scopes = new Vector();
     Activity mActivity;
+    String service;
     HostRefreshTask(Activity activity) {
         super();
         mActivity = activity;
+        service = mActivity.getResources().getString(R.string.service);
     }
     @Override
     protected HostInfo doInBackground(Context... contexts) {
@@ -63,7 +65,7 @@ public class HostRefreshTask extends AsyncTask<Context,HostInfo,HostInfo> {
         try {
             String selector = "";
             ServiceLocationEnumeration sleenum =
-                    loc.findServices(new ServiceType("service:schlub.x"), scopes, selector);
+                    loc.findServices(new ServiceType(service), scopes, selector);
 
             ServiceURL sUrl = null;
             while (sleenum.hasMoreElements()) {
@@ -104,14 +106,15 @@ public class HostRefreshTask extends AsyncTask<Context,HostInfo,HostInfo> {
             Log.i("onProgressUpate", update[0].toString());
             final TextView subnetView = (TextView)mActivity.findViewById(R.id.Subnet);
             subnetView.setText(update[0].subnet);
-            for (String i : update[0].ids ) {
-                Spinner spinner = (Spinner) mActivity.findViewById(R.id.HostSpinner);
-                ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(mActivity,
-                        android.R.layout.simple_spinner_item, update[0].ids);
-                spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                spinner.setAdapter(spinnerAdapter);
-            }
-        }
 
+            Spinner spinner = (Spinner) mActivity.findViewById(R.id.HostSpinner);
+            ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(mActivity,
+                    android.R.layout.simple_spinner_item, update[0].ids);
+            spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            spinner.setAdapter(spinnerAdapter);
+            ArrayAdapter myAdap = (ArrayAdapter) spinner.getAdapter(); //cast to an ArrayAdapter
+            int spinnerPosition = myAdap.getPosition(update[0].all);
+            spinner.setSelection(spinnerPosition);
+        }
     }
 }

@@ -2,7 +2,7 @@
     <string name="app_name">SchlubController</string>
     <string name="hLabel">Host:</string>
     <string-array name="host_list">
-        <item>All</item>
+        <item>All Hosts</item>
     </string-array>
     <string name="master">Master:</string>
     <string name="subnet">255.255.255</string>
@@ -22,4 +22,5 @@
     <string name="hostRefreshMessage">Refreshing Host List</string>
     <string name="returnHostRefreshMessage">Host List Refreshed</string>
     <string name="all">All Hosts</string>
+    <string name="service">service:schlub.x</string>
 </resources>
