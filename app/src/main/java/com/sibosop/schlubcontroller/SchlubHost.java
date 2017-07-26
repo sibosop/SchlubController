@@ -5,16 +5,23 @@ package com.sibosop.schlubcontroller;
  */
 
 class SchlubHost extends Object {
+    String  id;
     String  status;
     Boolean isMaster;
     Integer vol;
     String  sound;
     String  phrase;
 
+
+    SchlubHost() {
+        super();
+        id = "none";
+    }
     @Override
     public String toString() {
         return
-                status
+                id
+                + " " + status
                 + " " + isMaster.toString()
                 + " " + vol.toString()
                 + " " + sound

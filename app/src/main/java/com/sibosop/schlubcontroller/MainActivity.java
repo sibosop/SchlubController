@@ -7,12 +7,17 @@ import android.os.Bundle;
 import android.support.v7.internal.widget.AdapterViewCompat;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.util.Log;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class MainActivity extends AppCompatActivity {
+    HostInfo hostInfo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,18 +35,29 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        Spinner hostSpinner = (Spinner) findViewById(R.id.HostSpinner);
+        final Spinner hostSpinner = (Spinner) findViewById(R.id.HostSpinner);
         hostSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view,
                                        int position, long id) {
-                String item = (String)  parent.getItemAtPosition(position);
-                final TextView subnetView = (TextView)MainActivity.this.findViewById(R.id.Subnet);
+                String item = (String) parent.getItemAtPosition(position);
+                final TextView subnetView = (TextView) MainActivity.this.findViewById(R.id.Subnet);
                 String subnet = subnetView.getText().toString();
-                String[] params = new String[] {subnet,item};
-                new GetHostInfoTask(MainActivity.this).execute(params);
+                if (!item.equals("none")
+                        && !subnet.equals(getResources().getString(R.string.subnet))) {
+                    ArrayList<String> ids = new ArrayList<>();
+                    ids.add(subnet);
+                    if ( item == getResources().getString(R.string.all)) {
+                        ArrayAdapter myAdap = (ArrayAdapter) hostSpinner.getAdapter();
+                        for ( int i = 0; i < myAdap.getCount() - 1; ++i ) {
+                            ids.add((String)myAdap.getItem(i));
+                        }
+                    } else {
+                        ids.add(item);
+                    }
+                    new GetHostInfoTask(MainActivity.this).execute(ids);
+                }
             }
-
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
                 // TODO Auto-generated method stub

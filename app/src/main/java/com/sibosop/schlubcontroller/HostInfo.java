@@ -11,7 +11,7 @@ import java.util.List;
 class HostInfo extends Object {
     String subnet ="";
     String all;
-    List<String> ids = new ArrayList<>();
+    ArrayList<String> ids = new ArrayList<>();
 
     HostInfo(String a) {
         super();

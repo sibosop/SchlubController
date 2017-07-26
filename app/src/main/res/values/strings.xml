@@ -2,7 +2,7 @@
     <string name="app_name">SchlubController</string>
     <string name="hLabel">Host:</string>
     <string-array name="host_list">
-        <item>All Hosts</item>
+        <item>none</item>
     </string-array>
     <string name="master">Master:</string>
     <string name="subnet">255.255.255</string>
