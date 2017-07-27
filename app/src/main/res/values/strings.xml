@@ -5,7 +5,8 @@
         <item>none</item>
     </string-array>
     <string name="master">Master:</string>
-    <string name="subnet">255.255.255</string>
+    <string name="subnetDefault">255.255.255</string>
+    <string name="subnet">Subnet</string>
     <string name="volume">Volume: </string>
     <string name="defMaster">102</string>
     <string name="autoPlay">Auto Play</string>

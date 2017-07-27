@@ -74,7 +74,6 @@ class GetHostInfoTask extends AsyncTask<ArrayList<String>,ArrayList<SchlubHost>,
                 Log.i(tag, "onProgress:" + s.toString());
                 if (s.isMaster) {
                     updateMaster(s);
-                    break;
                 } else {
                     updateServant(s);
                 }

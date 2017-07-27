@@ -60,7 +60,7 @@ public class HostRefreshTask extends AsyncTask<Context,HostInfo,HostInfo> {
         scopes.add("default");
 
         Resources r = contexts[0].getResources();
-        HostInfo rval = new HostInfo(r.getString(R.string.all));
+        HostInfo rval = new HostInfo();
         Log.i(r.getString(R.string.matag), r.getString(R.string.hostRefreshMessage));
         try {
             String selector = "";
@@ -112,9 +112,6 @@ public class HostRefreshTask extends AsyncTask<Context,HostInfo,HostInfo> {
                     android.R.layout.simple_spinner_item, update[0].ids);
             spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             spinner.setAdapter(spinnerAdapter);
-            ArrayAdapter myAdap = (ArrayAdapter) spinner.getAdapter(); //cast to an ArrayAdapter
-            int spinnerPosition = myAdap.getPosition(update[0].all);
-            spinner.setSelection(spinnerPosition);
         }
     }
 }

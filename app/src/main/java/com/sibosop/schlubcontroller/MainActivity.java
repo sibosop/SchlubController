@@ -47,14 +47,7 @@ public class MainActivity extends AppCompatActivity {
                         && !subnet.equals(getResources().getString(R.string.subnet))) {
                     ArrayList<String> ids = new ArrayList<>();
                     ids.add(subnet);
-                    if ( item == getResources().getString(R.string.all)) {
-                        ArrayAdapter myAdap = (ArrayAdapter) hostSpinner.getAdapter();
-                        for ( int i = 0; i < myAdap.getCount() - 1; ++i ) {
-                            ids.add((String)myAdap.getItem(i));
-                        }
-                    } else {
-                        ids.add(item);
-                    }
+                    ids.add(item);
                     new GetHostInfoTask(MainActivity.this).execute(ids);
                 }
             }
