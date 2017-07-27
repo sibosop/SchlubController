@@ -10,12 +10,16 @@
 
     <GridLayout
         android:id="@+id/GlobalLayout"
+        android:background="@drawable/border"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginLeft="0dp"
+        android:layout_marginTop="0dp"
         app:layout_constraintLeft_toRightOf="@+id/HostLayout"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginRight="0dp"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintHorizontal_bias="0.5">
 
         <EditText
             android:id="@+id/masterLabel"
@@ -58,10 +62,11 @@
 
     <GridLayout
         android:id="@+id/HostLayout"
+        android:background="@drawable/border"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="16dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginLeft="0dp"
+        android:layout_marginTop="0dp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         android:layout_marginStart="16dp">
