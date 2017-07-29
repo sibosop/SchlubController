@@ -24,11 +24,10 @@ class SclubRequest {
         tag = this.getClass().getSimpleName();
     }
 
-    public String probe() {
-        return send("probe");
-    }
 
-    private String send(String cmd) {
+
+
+    public String send(String cmd) {
         Log.i(tag,hostAddr);
         String rval = "{}";
 

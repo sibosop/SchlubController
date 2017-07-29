@@ -29,12 +29,16 @@ class GetHostInfoTask extends AsyncTask<ArrayList<String>,ArrayList<SchlubHost>,
         Boolean rval = Boolean.FALSE;
         try {
             if (params.length == 1) {
+                if (params[0].size() == 0) {
+                    Log.i(tag,"exiting on empty params");
+                    return rval;
+                }
                 String subnet = params[0].get(0);
                 ArrayList<SchlubHost> schlubHosts = new ArrayList<SchlubHost>();
                 Gson gson = new Gson();
                 for(int i = 1; i < params[0].size();++i) {
                         String id = params[0].get(i);
-                        String response = new SclubRequest(subnet,id).probe();
+                        String response = new SclubRequest(subnet,id).send("probe");
                         SchlubHost s = gson.fromJson(response, SchlubHost.class);
                         s.id = id;
                         schlubHosts.add(s);
