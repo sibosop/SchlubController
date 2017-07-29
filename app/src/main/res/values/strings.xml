@@ -24,4 +24,6 @@
     <string name="returnHostRefreshMessage">Host List Refreshed</string>
     <string name="all">All Hosts</string>
     <string name="service">service:schlub.x</string>
+    <string name="global">Global</string>
+    <string name="local">Local</string>
 </resources>
