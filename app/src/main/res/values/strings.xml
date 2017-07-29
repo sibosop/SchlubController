@@ -8,7 +8,7 @@
     <string name="subnetDefault">255.255.255</string>
     <string name="subnet">Subnet</string>
     <string name="volume">Volume: </string>
-    <string name="defMaster">102</string>
+    <string name="defMaster">None</string>
     <string name="autoPlay">Auto Play</string>
     <string name="shutdown">Shutdown</string>
     <string name="stop">Stop</string>

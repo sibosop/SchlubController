@@ -15,8 +15,16 @@ import java.util.ArrayList;
 public class SendCmdTask extends AsyncTask <String,String,Boolean> {
     String tag;
     MainActivity mActivity;
+    String host;
     SendCmdTask(MainActivity mainActivity){
         mActivity = mainActivity;
+        host = "";
+        tag = getClass().getSimpleName();
+    }
+
+    SendCmdTask(MainActivity mainActivity,String host_){
+        mActivity = mainActivity;
+        host = host_;
         tag = getClass().getSimpleName();
     }
 
@@ -27,9 +35,12 @@ public class SendCmdTask extends AsyncTask <String,String,Boolean> {
             if (cmds.length == 1) {
                 String cmd = cmds[0];
                 Gson gson = new Gson();
-                ArrayList<String> ids = mActivity.getItemList("");
-                String subnet = ids.get(0);
-                for ( int i = 1; i < ids.size(); ++i ) {
+
+                String subnet = mActivity.getSubnet();
+                if ( subnet.isEmpty())
+                    return rval;
+                ArrayList<String> ids = mActivity.getItemList(host);
+                for ( int i = 0; i < ids.size(); ++i ) {
                     String response = new SclubRequest(subnet, ids.get(i)).send(cmd);
                     SchlubStatus s = gson.fromJson(response, SchlubStatus.class);
                     Log.i(tag,"cmd:"+cmd+" status:"+s.toString());

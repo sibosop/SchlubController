@@ -5,10 +5,13 @@ import android.content.Context;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.internal.widget.AdapterViewCompat;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
 import android.widget.TextView;
@@ -31,11 +34,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     public ArrayList<String> getItemList(String item) {
         ArrayList<String> ids = new ArrayList<>();
-        final TextView subnetView = (TextView) MainActivity.this.findViewById(R.id.Subnet);
-        String subnet = subnetView.getText().toString();
-        if (!item.equals("none")
-                && !subnet.equals(getResources().getString(R.string.subnet))) {
-            ids.add(subnet);
+        if (!item.equals("none")) {
             if ( item.isEmpty()) {
                 final Spinner hostSpinner = (Spinner) findViewById(R.id.HostSpinner);
                 SpinnerAdapter spinnerAdapter = hostSpinner.getAdapter();
@@ -45,19 +44,44 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
             }
             else {
-
                 ids.add(item);
             }
         }
         return ids;
+    }
+    public String getSubnet() {
+        final TextView subnetView = (TextView) findViewById(R.id.Subnet);
+        String subnet = subnetView.getText().toString();
+        if ( subnet == getString(R.string.subnetDefault))
+            subnet = "";
+        return subnet;
+    }
+    public String getMaster() {
+        final TextView masterView = (TextView) findViewById(R.id.MasterValue);
+        String master = masterView.getText().toString();
+        if ( master == getString(R.string.defMaster))
+            master = "";
+        return master;
     }
     @Override
     public void onClick(View v) {
         // do something when the button is clicked
         // Yes we will handle click here but which button clicked??? We don't know
         String[] cmd = new String[1];
+        String host = "";
         // So we will make
         switch (v.getId() /*to get clicked view id**/) {
+            case R.id.AutoPlay:
+                boolean isChecked = ((CheckBox) findViewById(R.id.AutoPlay)).isChecked();
+                if (isChecked) {
+                    cmd[0] = "auto";
+                } else {
+                    cmd[0] = "manual";
+                }
+                host = getMaster();
+                Log.i(tag,"click on Auto Play"+cmd[0]);
+                break;
+
             case R.id.shutdown:
                 Log.i(tag,"click on host shutdown");
                 cmd[0] = "poweroff";
@@ -79,7 +103,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             default:
                 return;
         }
-        new SendCmdTask(MainActivity.this).execute(cmd);
+        new SendCmdTask(MainActivity.this,host).execute(cmd);
     }
 
 
@@ -92,6 +116,51 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         runOnUiThread(new Runnable() {
             public void run() {
                 setContentView(R.layout.activity_main);
+            }
+        });
+        final EditText volText = (EditText) findViewById(R.id.volumeValue);
+        volText.setOnKeyListener(new View.OnKeyListener() {
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                // If the event is a key-down event on the "enter" button
+                if ((event.getAction() == KeyEvent.ACTION_DOWN) &&
+                        (keyCode == KeyEvent.KEYCODE_ENTER)) {
+                    // Perform action on key press
+                    String vol = volText.getText().toString();
+                    Log.i(tag, "vol got:"+vol);
+                    String[] cmd = new String[] {"vol?val="+vol};
+                    new SendCmdTask(MainActivity.this).execute(cmd);
+                }
+                return false;
+            }
+        });
+        final EditText soundText = (EditText) findViewById(R.id.SoundValue);
+        soundText.setOnKeyListener(new View.OnKeyListener() {
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                // If the event is a key-down event on the "enter" button
+                if ((event.getAction() == KeyEvent.ACTION_DOWN) &&
+                        (keyCode == KeyEvent.KEYCODE_ENTER)) {
+                    // Perform action on key press
+                    String sound = soundText.getText().toString();
+                    Log.i(tag, "sound got:"+sound);
+                    String[] cmd = new String[] {"player?play="+sound+".wav"};
+                    new SendCmdTask(MainActivity.this).execute(cmd);
+                }
+                return false;
+            }
+        });
+        final EditText phraseText = (EditText) findViewById(R.id.PhraseValue);
+        phraseText.setOnKeyListener(new View.OnKeyListener() {
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                // If the event is a key-down event on the "enter" button
+                if ((event.getAction() == KeyEvent.ACTION_DOWN) &&
+                        (keyCode == KeyEvent.KEYCODE_ENTER)) {
+                    // Perform action on key press
+                    String phrase = phraseText.getText().toString();
+                    Log.i(tag, "phrase got:"+phrase);
+                    String[] cmd = new String[] {"player?phrase="+phrase};
+                    new SendCmdTask(MainActivity.this).execute(cmd);
+                }
+                return false;
             }
         });
 
@@ -108,14 +177,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         final Button shutdownButton = (Button)findViewById(R.id.shutdown);
         shutdownButton.setOnClickListener(this);
 
+        final CheckBox autoBox = (CheckBox) findViewById(R.id.AutoPlay);
+        autoBox.setOnClickListener(this);
+
         final Spinner hostSpinner = (Spinner) findViewById(R.id.HostSpinner);
         hostSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view,
                                        int position, long id) {
                 String item = (String) parent.getItemAtPosition(position);
-                ArrayList<String> ids = getItemList(item);
-                new GetHostInfoTask(MainActivity.this).execute(ids);
+                new GetHostInfoTask(MainActivity.this,item).execute();
             }
             @Override
             public void onNothingSelected(AdapterView<?> parent) {

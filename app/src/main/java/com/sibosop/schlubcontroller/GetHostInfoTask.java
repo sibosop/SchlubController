@@ -16,38 +16,42 @@ import java.util.List;
  * Created by brian on 7/24/17.
  */
 
-class GetHostInfoTask extends AsyncTask<ArrayList<String>,ArrayList<SchlubHost>,Boolean>{
-    Activity mActivity;
+class GetHostInfoTask extends AsyncTask<Void,ArrayList<SchlubHost>,Boolean>{
+    MainActivity mActivity;
     String tag;
+    String host;
     public GetHostInfoTask(MainActivity mainActivity) {
         mActivity = mainActivity;
         tag = getClass().getSimpleName();
+        host = "";
+    }
+
+    public GetHostInfoTask(MainActivity mainActivity, String host_) {
+        mActivity = mainActivity;
+        tag = getClass().getSimpleName();
+        host = host_;
     }
 
     @Override
-    protected Boolean doInBackground(ArrayList<String>... params) {
+    protected Boolean doInBackground(Void... v) {
         Boolean rval = Boolean.FALSE;
         try {
-            if (params.length == 1) {
-                if (params[0].size() == 0) {
-                    Log.i(tag,"exiting on empty params");
-                    return rval;
-                }
-                String subnet = params[0].get(0);
-                ArrayList<SchlubHost> schlubHosts = new ArrayList<SchlubHost>();
-                Gson gson = new Gson();
-                for(int i = 1; i < params[0].size();++i) {
-                        String id = params[0].get(i);
+            String subnet = mActivity.getSubnet();
+            if ( subnet.isEmpty() )
+                return Boolean.FALSE;
+
+            ArrayList<String> ids = mActivity.getItemList(host);
+            ArrayList<SchlubHost> schlubHosts = new ArrayList<SchlubHost>();
+            Gson gson = new Gson();
+            for(int i = 0; i < ids.size();++i) {
+                        String id = ids.get(i);
                         String response = new SclubRequest(subnet,id).send("probe");
                         SchlubHost s = gson.fromJson(response, SchlubHost.class);
                         s.id = id;
                         schlubHosts.add(s);
                         rval = Boolean.TRUE;
-                }
-                publishProgress(schlubHosts);
-            } else {
-                Log.e(tag, "illegal param length:" + Integer.valueOf(params.length));
             }
+            publishProgress(schlubHosts);
         }
         catch ( Exception e) {
             Log.e(tag,e.toString());
