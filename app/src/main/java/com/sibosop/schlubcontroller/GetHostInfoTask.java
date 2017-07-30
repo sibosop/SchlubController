@@ -62,16 +62,22 @@ class GetHostInfoTask extends AsyncTask<Void,ArrayList<SchlubHost>,Boolean>{
         Log.i(tag, "updating Master " + s.toString());
         final TextView masterValue = (TextView) mActivity.findViewById(R.id.MasterValue);
         masterValue.setText(s.id);
+        final TextView volumeValue = (TextView) mActivity.findViewById(R.id.VolumeValue);
+        volumeValue.setText(s.vol.toString());
+        final TextView SoundValue = (TextView) mActivity.findViewById(R.id.SoundValue);
+        SoundValue.setText(s.sound);
+        final TextView PhraseValue = (TextView) mActivity.findViewById(R.id.PhraseValue);
+        PhraseValue.setText(s.phrase);
         updateServant(s);
     }
 
     private void updateServant(SchlubHost s){
         Log.i(tag, "updating servant " + s.toString());
-        final TextView volumeValue = (TextView) mActivity.findViewById(R.id.volumeValue);
+        final TextView volumeValue = (TextView) mActivity.findViewById(R.id.LocalVolumeValue);
         volumeValue.setText(s.vol.toString());
-        final TextView SoundValue = (TextView) mActivity.findViewById(R.id.SoundValue);
+        final TextView SoundValue = (TextView) mActivity.findViewById(R.id.LocalSoundValue);
         SoundValue.setText(s.sound);
-        final TextView PhraseValue = (TextView) mActivity.findViewById(R.id.PhraseValue);
+        final TextView PhraseValue = (TextView) mActivity.findViewById(R.id.LocalPhraseValue);
         PhraseValue.setText(s.phrase);
     }
 
