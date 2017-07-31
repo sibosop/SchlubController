@@ -30,9 +30,9 @@ import java.util.Vector;
 public class HostRefreshTask extends AsyncTask<Context,HostInfo,HostInfo> {
     private Locator loc;
     Vector scopes = new Vector();
-    Activity mActivity;
+    MainActivity mActivity;
     String service;
-    HostRefreshTask(Activity activity) {
+    HostRefreshTask(MainActivity activity) {
         super();
         mActivity = activity;
         service = mActivity.getResources().getString(R.string.service);
@@ -112,6 +112,7 @@ public class HostRefreshTask extends AsyncTask<Context,HostInfo,HostInfo> {
                     android.R.layout.simple_spinner_item, update[0].ids);
             spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             spinner.setAdapter(spinnerAdapter);
+            mActivity.startHostInfoRefresh();
         }
     }
 }

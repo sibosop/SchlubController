@@ -6,7 +6,7 @@
     </string-array>
     <string name="master">Master:</string>
     <string name="subnetDefault">255.255.255</string>
-    <string name="subnet">Subnet</string>
+    <string name="subnet">Subnet:</string>
     <string name="volume">Volume: </string>
     <string name="defMaster">None</string>
     <string name="autoPlay">Auto Play</string>
@@ -26,4 +26,8 @@
     <string name="service">service:schlub.x</string>
     <string name="global">Global</string>
     <string name="local">Local</string>
+    <string name="volumeCmd">vol?val=</string>
+    <string name="soundCmd">"player?play="</string>
+    <string name="phraseCmd">"player?phrase="</string>
+    <string name="neverSet">Never Set</string>
 </resources>

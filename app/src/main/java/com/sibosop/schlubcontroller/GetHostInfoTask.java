@@ -17,19 +17,19 @@ import java.util.List;
  */
 
 class GetHostInfoTask extends AsyncTask<Void,ArrayList<SchlubHost>,Boolean>{
-    MainActivity mActivity;
-    String tag;
-    String host;
+    private MainActivity mActivity;
+    private String tag;
+    private ArrayList<String> hostList;
     public GetHostInfoTask(MainActivity mainActivity) {
         mActivity = mainActivity;
         tag = getClass().getSimpleName();
-        host = "";
+        hostList = mActivity.getItemList("");
     }
 
-    public GetHostInfoTask(MainActivity mainActivity, String host_) {
+    public GetHostInfoTask(MainActivity mainActivity, ArrayList<String> hostList_ ) {
         mActivity = mainActivity;
         tag = getClass().getSimpleName();
-        host = host_;
+        hostList = hostList_;
     }
 
     @Override
@@ -40,16 +40,16 @@ class GetHostInfoTask extends AsyncTask<Void,ArrayList<SchlubHost>,Boolean>{
             if ( subnet.isEmpty() )
                 return Boolean.FALSE;
 
-            ArrayList<String> ids = mActivity.getItemList(host);
             ArrayList<SchlubHost> schlubHosts = new ArrayList<SchlubHost>();
             Gson gson = new Gson();
-            for(int i = 0; i < ids.size();++i) {
-                        String id = ids.get(i);
-                        String response = new SclubRequest(subnet,id).send("probe");
-                        SchlubHost s = gson.fromJson(response, SchlubHost.class);
-                        s.id = id;
-                        schlubHosts.add(s);
-                        rval = Boolean.TRUE;
+
+            for(int i = 0; i < hostList.size();++i) {
+                String id = hostList.get(i);
+                String response = new SclubRequest(subnet,id).send("probe");
+                SchlubHost s = gson.fromJson(response, SchlubHost.class);
+                s.id = id;
+                schlubHosts.add(s);
+                rval = Boolean.TRUE;
             }
             publishProgress(schlubHosts);
         }
@@ -62,23 +62,20 @@ class GetHostInfoTask extends AsyncTask<Void,ArrayList<SchlubHost>,Boolean>{
         Log.i(tag, "updating Master " + s.toString());
         final TextView masterValue = (TextView) mActivity.findViewById(R.id.MasterValue);
         masterValue.setText(s.id);
-        final TextView volumeValue = (TextView) mActivity.findViewById(R.id.VolumeValue);
-        volumeValue.setText(s.vol.toString());
-        final TextView SoundValue = (TextView) mActivity.findViewById(R.id.SoundValue);
-        SoundValue.setText(s.sound);
-        final TextView PhraseValue = (TextView) mActivity.findViewById(R.id.PhraseValue);
-        PhraseValue.setText(s.phrase);
         updateServant(s);
     }
 
     private void updateServant(SchlubHost s){
         Log.i(tag, "updating servant " + s.toString());
         final TextView volumeValue = (TextView) mActivity.findViewById(R.id.LocalVolumeValue);
-        volumeValue.setText(s.vol.toString());
+        if (!volumeValue.hasFocus())
+            volumeValue.setText(s.vol.toString());
         final TextView SoundValue = (TextView) mActivity.findViewById(R.id.LocalSoundValue);
-        SoundValue.setText(s.sound);
+        if ( !SoundValue.hasFocus())
+            SoundValue.setText(s.sound);
         final TextView PhraseValue = (TextView) mActivity.findViewById(R.id.LocalPhraseValue);
-        PhraseValue.setText(s.phrase);
+        if ( !PhraseValue.hasFocus())
+            PhraseValue.setText(s.phrase);
     }
 
     @Override

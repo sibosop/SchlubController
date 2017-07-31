@@ -1,17 +1,23 @@
 package com.sibosop.schlubcontroller;
 
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.internal.widget.AdapterViewCompat;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
 import android.widget.TextView;
@@ -19,6 +25,8 @@ import android.widget.Toast;
 import android.util.Log;
 
 import com.google.gson.Gson;
+
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -59,7 +67,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public String getMaster() {
         final TextView masterView = (TextView) findViewById(R.id.MasterValue);
         String master = masterView.getText().toString();
-        if ( master == getString(R.string.defMaster))
+        if ( master == getString(R.string.defMaster) )
             master = "";
         return master;
     }
@@ -68,15 +76,182 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         String item = (String) hostSpinner.getSelectedItem().toString();
         return item;
     }
+
+
+    private AlertDialog setValueDialog;
+    private void doSetValueDialog(Boolean isGlobal,final String hostCmd,final TextView tv) {
+        if ( setValueDialog != null ) {
+            setValueDialog.dismiss();
+            setValueDialog = null;
+        }
+        final String host;
+        if(isGlobal)
+            host = "";
+        else
+            host = getLocal();
+
+
+        LayoutInflater inflater = LayoutInflater.from(getApplicationContext());
+        final View setValueAlertView = inflater.inflate(R.layout.value_set_alert, null);
+        final AlertDialog.Builder alert = new AlertDialog.Builder(this);
+
+        SeekBar seek=(SeekBar)setValueAlertView.findViewById(R.id.ValueSetSeekbar);
+        seek.setProgress(Integer.parseInt(tv.getText().toString()));
+        TextView textView = (TextView)setValueAlertView.findViewById(R.id.ValueSetValue);
+        textView.setText(tv.getText());
+        seek.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener(){
+
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress,
+                                          boolean fromUser) {
+                // TODO Auto-generated method stub
+                TextView textView = (TextView)setValueAlertView.findViewById(R.id.ValueSetValue);
+                textView.setText(String.valueOf(progress));
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+                // TODO Auto-generated method stub
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                // TODO Auto-generated method stub
+            }
+        });
+
+        alert.setView(setValueAlertView);
+        alert.setPositiveButton("Set",new DialogInterface.OnClickListener()
+        {
+            public void onClick(DialogInterface dialog,int id)
+            {
+                TextView textView = (TextView)setValueAlertView.findViewById(R.id.ValueSetValue);
+                String val = textView.getText().toString();
+                Log.i(tag,"got value"+val);
+                String endCmd = hostCmd + val;
+                new SendCmdTask(MainActivity.this,host).execute(endCmd);
+                tv.setText(textView.getText());
+            }
+        });
+
+        alert.setNegativeButton("Cancel",new DialogInterface.OnClickListener()
+        {
+            public void onClick(DialogInterface dialog,int id)
+            {
+
+            }
+        });
+        setValueDialog = alert.create();
+        setValueDialog.show();
+    }
+    private AlertDialog setStringDialog;
+    private void doSetStringDialog(Boolean isGlobal,final int cmd,
+                    final TextView value,String title) {
+        if ( setStringDialog != null ) {
+            setStringDialog.dismiss();
+            setStringDialog = null;
+        }
+        final String host;
+        if(isGlobal)
+            host = "";
+        else
+            host = getLocal();
+
+
+        LayoutInflater inflater = LayoutInflater.from(getApplicationContext());
+        final View setStringAlertView = inflater.inflate(R.layout.string_set_alert, null);
+        final AlertDialog.Builder alert = new AlertDialog.Builder(this);
+
+
+        TextView titleView = (TextView)setStringAlertView.findViewById(R.id.StringSetTitle);
+        titleView.setText(title);
+
+        final EditText valueView = (EditText)setStringAlertView.findViewById(R.id.StringTextValue);
+        valueView.setText(value.getText());
+
+
+        alert.setView(setStringAlertView);
+        alert.setPositiveButton("Set",new DialogInterface.OnClickListener()
+        {
+            public void onClick(DialogInterface dialog,int id)
+            {
+                TextView textView = (TextView)setStringAlertView.findViewById(R.id.StringTextValue);
+                String endCmd = getString(cmd) + textView.getText().toString();
+                if ( cmd == R.string.soundCmd )
+                    endCmd += ".wav";
+                new SendCmdTask(MainActivity.this,host).execute(endCmd);
+                value.setText(textView.getText());
+            }
+        });
+
+        alert.setNegativeButton("Cancel",new DialogInterface.OnClickListener()
+        {
+            public void onClick(DialogInterface dialog,int id)
+            {
+
+            }
+        });
+        setValueDialog = alert.create();
+        setValueDialog.show();
+    }
+
+    public Handler handler = new Handler();
+    // Define the code block to be executed
+    private Runnable hostInfoRefresh = new Runnable() {
+        @Override
+        public void run() {
+            // Do something here on the main thread
+            Log.i(tag, "hostInfoRefresh called on main thread");
+            // Repeat this the same runnable code block again another 2 seconds
+            // 'this' is referencing the Runnable object
+            ArrayList<String> hosts = new ArrayList<String>();
+            String host = getLocal();
+            if (!host.isEmpty()) {
+                hosts.add(host);
+            }
+            new GetHostInfoTask(MainActivity.this,hosts).execute();
+            handler.postDelayed(this, 10000);
+        }
+    };
+
+
+
+    public void startHostInfoRefresh() {
+        handler.removeCallbacks(hostInfoRefresh);
+        handler.postDelayed(hostInfoRefresh,1000);
+    }
+    public void stopHostInfoRefresh() {
+        handler.removeCallbacks(hostInfoRefresh);
+    }
     @Override
     public void onClick(View v) {
         // do something when the button is clicked
         // Yes we will handle click here but which button clicked??? We don't know
         String[] cmd = new String[1];
         String host = "";
+        boolean isGlobal = false;
 
         // So we will make
         switch (v.getId() /*to get clicked view id**/) {
+            case R.id.VolumeValue:
+                isGlobal = true;
+            case R.id.LocalVolumeValue:
+                Log.i(tag,"VolumeValue change request");
+                doSetValueDialog(isGlobal,getString(R.string.volumeCmd),(TextView)v);
+                return;
+
+            case R.id.PhraseValue:
+                isGlobal = true;
+            case R.id.LocalPhraseLabel:
+                doSetStringDialog(isGlobal,R.string.phraseCmd,(TextView)v,"Set Phrase");
+                return;
+
+            case R.id.SoundValue:
+                isGlobal = true;
+            case R.id.LocalSoundValue:
+                doSetStringDialog(isGlobal,R.string.soundCmd,(TextView)v,"Set Sound");
+                return;
+
             case R.id.AutoPlay:
                 boolean isChecked = ((CheckBox) findViewById(R.id.AutoPlay)).isChecked();
                 if (isChecked) {
@@ -90,39 +265,44 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             case R.id.shutdown:
                 Log.i(tag,"click on host shutdown");
+                stopHostInfoRefresh();
                 cmd[0] = "poweroff";
                 break;
 
             case R.id.reboot:
                 Log.i(tag,"click on reboot");
+                stopHostInfoRefresh();
                 cmd[0] = "reboot";
                 break;
 
             case R.id.upgrade:
                 Log.i(tag,"click on host upgrade");
+                stopHostInfoRefresh();
                 cmd[0] = "upgrade";
                 break;
 
             case R.id.LocalShutdown:
                 cmd[0] = "poweroff";
+                stopHostInfoRefresh();
                 host = getLocal();
                 Log.i(tag,"click on host shutdown"+host);
                 break;
 
             case R.id.LocalReboot:
                 cmd[0] = "reboot";
+                stopHostInfoRefresh();
                 host = getLocal();
                 Log.i(tag,"click on reboot"+host);
                 break;
 
             case R.id.LocalUpgrade:
                 cmd[0] = "upgrade";
+                stopHostInfoRefresh();
                 host = getLocal();
                 Log.i(tag,"click on host upgrade"+host);
                 break;
 
             case R.id.refreshHosts:
-                // do something when the corky3 is clicked
                 Log.i(tag,"click on host refresh");
                 new HostRefreshTask(this).execute(getBaseContext());
 
@@ -144,99 +324,29 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 setContentView(R.layout.activity_main);
             }
         });
-        final EditText volText = (EditText) findViewById(R.id.VolumeValue);
-        volText.setOnKeyListener(new View.OnKeyListener() {
-            public boolean onKey(View v, int keyCode, KeyEvent event) {
-                // If the event is a key-down event on the "enter" button
-                if ((event.getAction() == KeyEvent.ACTION_DOWN) &&
-                        (keyCode == KeyEvent.KEYCODE_ENTER)) {
-                    // Perform action on key press
-                    String vol = volText.getText().toString();
-                    Log.i(tag, "vol got:"+vol);
-                    String[] cmd = new String[] {"vol?val="+vol};
-                    new SendCmdTask(MainActivity.this).execute(cmd);
-                }
-                return false;
-            }
-        });
-        final EditText soundText = (EditText) findViewById(R.id.SoundValue);
-        soundText.setOnKeyListener(new View.OnKeyListener() {
-            public boolean onKey(View v, int keyCode, KeyEvent event) {
-                // If the event is a key-down event on the "enter" button
-                if ((event.getAction() == KeyEvent.ACTION_DOWN) &&
-                        (keyCode == KeyEvent.KEYCODE_ENTER)) {
-                    // Perform action on key press
-                    String sound = soundText.getText().toString();
-                    Log.i(tag, "sound got:"+sound);
-                    String[] cmd = new String[] {"player?play="+sound+".wav"};
-                    new SendCmdTask(MainActivity.this).execute(cmd);
-                }
-                return false;
-            }
-        });
-        final EditText phraseText = (EditText) findViewById(R.id.PhraseValue);
-        phraseText.setOnKeyListener(new View.OnKeyListener() {
-            public boolean onKey(View v, int keyCode, KeyEvent event) {
-                // If the event is a key-down event on the "enter" button
-                if ((event.getAction() == KeyEvent.ACTION_DOWN) &&
-                        (keyCode == KeyEvent.KEYCODE_ENTER)) {
-                    // Perform action on key press
-                    String phrase = phraseText.getText().toString();
-                    Log.i(tag, "phrase got:"+phrase);
-                    String[] cmd = new String[] {"player?phrase="+phrase};
-                    new SendCmdTask(MainActivity.this).execute(cmd);
-                }
-                return false;
-            }
-        });
-        final EditText localVolText = (EditText) findViewById(R.id.LocalVolumeValue);
-        localVolText.setOnKeyListener(new View.OnKeyListener() {
-            public boolean onKey(View v, int keyCode, KeyEvent event) {
-                // If the event is a key-down event on the "enter" button
-                if ((event.getAction() == KeyEvent.ACTION_DOWN) &&
-                        (keyCode == KeyEvent.KEYCODE_ENTER)) {
-                    // Perform action on key press
-                    String vol = localVolText.getText().toString();
-                    Log.i(tag, "vol got:"+vol);
-                    String[] cmd = new String[] {"vol?val="+vol};
-                    new SendCmdTask(MainActivity.this,getLocal()).execute(cmd);
-                }
-                return false;
-            }
-        });
-        final EditText localSoundText = (EditText) findViewById(R.id.LocalSoundValue);
-        localSoundText.setOnKeyListener(new View.OnKeyListener() {
-            public boolean onKey(View v, int keyCode, KeyEvent event) {
-                // If the event is a key-down event on the "enter" button
-                if ((event.getAction() == KeyEvent.ACTION_DOWN) &&
-                        (keyCode == KeyEvent.KEYCODE_ENTER)) {
-                    // Perform action on key press
-                    String sound = localSoundText.getText().toString();
-                    Log.i(tag, "sound got:"+sound);
-                    String[] cmd = new String[] {"player?play="+sound+".wav"};
-                    new SendCmdTask(MainActivity.this,getLocal()).execute(cmd);
-                }
-                return false;
-            }
-        });
-        final EditText localPhraseText = (EditText) findViewById(R.id.LocalPhraseValue);
-        localPhraseText.setOnKeyListener(new View.OnKeyListener() {
-            public boolean onKey(View v, int keyCode, KeyEvent event) {
-                // If the event is a key-down event on the "enter" button
-                if ((event.getAction() == KeyEvent.ACTION_DOWN) &&
-                        (keyCode == KeyEvent.KEYCODE_ENTER)) {
-                    // Perform action on key press
-                    String phrase = localPhraseText.getText().toString();
-                    Log.i(tag, "phrase got:"+phrase);
-                    String[] cmd = new String[] {"player?phrase="+phrase};
-                    new SendCmdTask(MainActivity.this,getLocal()).execute(cmd);
-                }
-                return false;
-            }
-        });
+
+
+        final TextView volText = (TextView) findViewById(R.id.VolumeValue);
+        volText.setOnClickListener(this);
+
+        final TextView localVolText = (TextView) findViewById(R.id.LocalVolumeValue);
+        localVolText.setOnClickListener(this);
+
+
+        final TextView soundText = (TextView) findViewById(R.id.SoundValue);
+        soundText.setOnClickListener(this);
+
+        final TextView phraseText = (TextView) findViewById(R.id.PhraseValue);
+        phraseText.setOnClickListener(this);
+
+        final TextView localSoundText = (TextView) findViewById(R.id.LocalSoundValue);
+        localSoundText.setOnClickListener(this);
+
+        final TextView localPhraseText = (TextView) findViewById(R.id.LocalPhraseValue);
+        localPhraseText.setOnClickListener(this);
+
         final Button refreshButton = (Button)findViewById(R.id.refreshHosts);
         refreshButton.setOnClickListener(this);
-
 
         final Button rebootButton = (Button)findViewById(R.id.reboot);
         rebootButton.setOnClickListener(this);
@@ -246,6 +356,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         final Button shutdownButton = (Button)findViewById(R.id.shutdown);
         shutdownButton.setOnClickListener(this);
+
         final Button localRebootButton = (Button)findViewById(R.id.LocalReboot);
         localRebootButton.setOnClickListener(this);
 
@@ -264,13 +375,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public void onItemSelected(AdapterView<?> parent, View view,
                                        int position, long id) {
                 String item = (String) parent.getItemAtPosition(position);
-                new GetHostInfoTask(MainActivity.this,item).execute();
+                new GetHostInfoTask(MainActivity.this,getItemList(item)).execute();
             }
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
                 // TODO Auto-generated method stub
             }
         });
+
 
 
     }
