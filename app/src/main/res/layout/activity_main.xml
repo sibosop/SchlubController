@@ -1,191 +1,334 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:descendantFocusability="beforeDescendants"
-    android:focusableInTouchMode="true"
-    tools:context="com.sibosop.schlubcontroller.MainActivity"
     >
-    <LinearLayout
-        android:id="@+id/ControllerLayout"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:background="@drawable/border2"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        >
 
-        <LinearLayout
-            android:id="@+id/LocalLayout"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:background="@drawable/border"
-            android:orientation="vertical"
-            >
+    <LinearLayout
+        android:id="@+id/StatusLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/StatusLabel"
+            android:layout_width="match_parent"
+
+            android:layout_height="wrap_content"
+            android:text="@string/status"
+            android:textAlignment="center"
+            android:textSize="24sp"
+            android:textStyle="bold" />
+
+        <GridLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
             <TextView
-                android:id="@+id/LocalLabel"
+                android:id="@+id/HostStatusLabel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center|center_horizontal|center_vertical"
-                android:text="@string/local"
-                android:textAppearance="@style/TextAppearance.AppCompat.Headline" />
+                android:layout_column="0"
+                android:layout_gravity="right"
+                android:layout_row="0"
+                android:focusable="false"
+                android:text="@string/hLabel"
+                android:textSize="18sp"
+                android:textStyle="bold" />
 
-            <GridLayout
-                android:id="@+id/HostLayout"
+            <Spinner
+                android:id="@+id/StatusHostSpinner"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
-
-                <TextView
-                    android:id="@+id/HostLabel"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentStart="true"
-                    android:layout_alignParentTop="true"
-                    android:layout_column="0"
-                    android:layout_gravity="right"
-                    android:layout_row="0"
-                    android:focusable="false"
-                    android:text="@string/hLabel"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
-
-                <Spinner
-                    android:id="@+id/HostSpinner"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
-                    android:layout_alignParentTop="true"
-                    android:layout_column="1"
-                    android:layout_row="0"
-                    android:entries="@array/host_list" />
-
-                <TextView
-                    android:id="@+id/LocalVolumeLabel"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_column="0"
-                    android:layout_row="1"
-                    android:text="@string/volume"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/LocalVolumeValue"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_column="1"
-                    android:layout_row="1"
-                    android:clickable="true"
-                    android:inputType="number"
-                    android:text="0"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/LocalSoundLabel"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_column="0"
-                    android:layout_row="2"
-                    android:text="@string/sound"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/LocalSoundValue"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_column="1"
-                    android:layout_row="2"
-                    android:text="@string/auto"
-                    android:clickable="true"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/LocalPhraseLabel"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_column="0"
-                    android:layout_row="3"
-                    android:layout_weight="1"
-                    android:text="@string/phrase"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/LocalPhraseValue"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_column="1"
-                    android:layout_row="3"
-                    android:clickable="true"
-                    android:text="@string/schlub"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
-
-
-            </GridLayout>
-
-            <Button
-                android:id="@+id/LocalUpgrade"
-                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/upgrade"
+                android:layout_column="1"
+                android:layout_gravity="left"
+                android:layout_row="0" />
+        </GridLayout>
+
+        <CheckBox
+            android:id="@+id/MasterCheckBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/isMaster"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <GridLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/VolumeLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_column="0"
+                android:layout_gravity="right"
+                android:layout_row="0"
+                android:focusable="false"
+                android:text="@string/volume"
+                android:textSize="18sp"
                 android:textStyle="bold" />
 
-            <Button
-                android:id="@+id/LocalReboot"
-                android:layout_width="match_parent"
+            <TextView
+                android:id="@+id/VolumeValue"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-
-                android:text="@string/reboot"
+                android:layout_column="1"
+                android:layout_gravity="left"
+                android:layout_row="0"
+                android:focusable="false"
+                android:text="@string/neverSet"
+                android:textSize="18sp"
                 android:textStyle="bold" />
 
-            <Button
-                android:id="@+id/LocalShutdown"
-                android:layout_width="match_parent"
+            <TextView
+                android:id="@+id/SoundLabel"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/shutdown"
+                android:layout_column="0"
+                android:layout_gravity="right"
+                android:layout_row="1"
+                android:focusable="false"
+                android:text="@string/sound"
+                android:textSize="18sp"
                 android:textStyle="bold" />
 
-        </LinearLayout>
+            <TextView
+                android:id="@+id/SoundValue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_column="1"
+                android:layout_gravity="left"
+                android:layout_row="1"
+                android:focusable="false"
+                android:text="@string/neverSet"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/PhraseLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_column="0"
+                android:layout_gravity="right"
+                android:layout_row="2"
+                android:focusable="false"
+                android:text="@string/phrase"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/PhraseValue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_column="1"
+                android:layout_gravity="left"
+                android:layout_row="2"
+                android:focusable="false"
+                android:text="@string/neverSet"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/ThreadsLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_column="0"
+                android:layout_gravity="right"
+                android:layout_row="3"
+                android:focusable="false"
+                android:text="@string/threads"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/ThreadsValue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_column="1"
+                android:layout_gravity="left"
+                android:layout_row="3"
+                android:focusable="false"
+                android:text="@string/neverSet"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/SpeakerLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_column="0"
+                android:layout_gravity="right"
+                android:layout_row="4"
+                android:focusable="false"
+                android:text="@string/speaker"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/SpeakerValue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_column="1"
+                android:layout_gravity="left"
+                android:layout_row="4"
+                android:focusable="false"
+                android:text="@string/neverSet"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+        </GridLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ControlLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_alignParentTop="true"
+        android:layout_toEndOf="@+id/StatusLayout">
+
+        <TextView
+            android:id="@+id/ControlLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/control"
+            android:textAlignment="center"
+            android:textSize="24sp"
+            android:textStyle="bold" />
+
+        <GridLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/HostLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_column="0"
+                android:layout_gravity="right"
+                android:layout_row="0"
+                android:text="@string/hLabel"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <Spinner
+                android:id="@+id/ControlHostSpinner"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left"
+                android:layout_column="1"
+                android:layout_row="0"/>
+
+            <Button
+                android:id="@+id/VolumeButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_column="0"
+                android:layout_row="1"
+                android:text="@string/volume" />
+
+            <Button
+                android:id="@+id/SoundButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_column="1"
+                android:layout_row="1"
+                android:text="@string/sound" />
+
+            <Button
+                android:id="@+id/PhraseButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_column="0"
+                android:layout_row="2"
+                android:text="@string/phrase" />
+
+            <Button
+                android:id="@+id/ThreadsButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_column="1"
+                android:layout_row="2"
+                android:text="@string/threads" />
+
+            <Button
+                android:id="@+id/RebootButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_column="0"
+                android:layout_row="3"
+                android:text="@string/reboot" />
+
+            <Button
+                android:id="@+id/UpgradeButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_column="1"
+                android:layout_row="3"
+                android:text="@string/upgrade" />
+
+            <Button
+                android:id="@+id/ShutdownButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_column="0"
+                android:layout_row="4"
+                android:text="@string/shutdown" />
+
+        </GridLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_below="@+id/ControlLayout"
+        android:layout_alignParentStart="true">
 
         <LinearLayout
-            android:id="@+id/GlobalLayout"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@drawable/border"
             android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/GlobalLabel"
+
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:focusable="false"
-                android:gravity="center|center_horizontal"
-                android:text="@string/global"
-                android:textAppearance="@style/TextAppearance.AppCompat.Headline" />
+                android:layout_alignParentStart="true"
+                android:layout_below="@+id/ControlLayout"
+                android:layout_weight="1"
+                android:orientation="horizontal">
 
-            <GridLayout
-                android:id="@+id/GlobalGrid"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
+                <TextView
+                    android:id="@+id/SubnetLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/subnet"
+                    android:textAlignment="viewEnd"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/SubnetValue"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/subnetDefault"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/MasterLabel"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_column="0"
-                    android:layout_gravity="right"
-                    android:layout_row="0"
-                    android:focusable="false"
+                    android:layout_weight="1"
                     android:text="@string/master"
+                    android:textAlignment="textEnd"
                     android:textSize="18sp"
                     android:textStyle="bold" />
 
@@ -193,166 +336,61 @@
                     android:id="@+id/MasterValue"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_column="1"
-                    android:layout_row="0"
-                    android:focusable="false"
-                    android:text="@string/defMaster"
+                    android:layout_weight="1"
+                    android:text="@string/neverSet"
                     android:textSize="18sp"
                     android:textStyle="bold" />
 
-                <TextView
-                    android:id="@+id/SubnetLabel"
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="horizontal">
+
+                <CheckBox
+                    android:id="@+id/AutoPlay"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_column="0"
-                    android:layout_gravity="right"
-                    android:layout_row="1"
-                    android:focusable="false"
-                    android:text="@string/subnet"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/Subnet"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_column="1"
-                    android:layout_row="1"
-                    android:focusable="false"
-                    android:text="@string/subnetDefault"
-                    android:textSize="18sp"
-                    android:textStyle="bold"
-                    android:visibility="visible" />
-
-                <TextView
-                    android:id="@+id/VolumeLabel"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentStart="true"
-                    android:layout_column="0"
-                    android:layout_gravity="right"
-                    android:layout_row="2"
-                    android:focusable="false"
-                    android:text="@string/volume"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/VolumeValue"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_column="1"
-                    android:layout_row="2"
-                    android:clickable="true"
-                    android:inputType="number"
-                    android:maxLines="1"
-                    android:text="0"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/SoundLabel"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_column="0"
-                    android:layout_gravity="right"
-                    android:layout_row="3"
-                    android:focusable="false"
-                    android:text="@string/sound"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/SoundValue"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_column="1"
-                    android:layout_row="3"
-                    android:cursorVisible="true"
-
-                    android:maxLines="1"
+                    android:layout_weight="1"
                     android:text="@string/auto"
                     android:textSize="18sp"
                     android:textStyle="bold" />
 
-                <TextView
-                    android:id="@+id/PhraseLabel"
+                <Button
+                    android:id="@+id/RefreshButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_column="0"
-                    android:layout_gravity="right"
-                    android:layout_row="4"
-                    android:focusable="false"
-                    android:text="@string/phrase"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
+                    android:layout_weight="1"
+                    android:text="@string/refresh" />
 
-                <TextView
-                    android:id="@+id/PhraseValue"
-                    android:layout_width="wrap_content"
+            </LinearLayout>
+
+            <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_column="1"
-                    android:layout_row="4"
-                    android:clickable="true"
-                    android:maxLines="1"
-                    android:text="@string/schlub"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
+                    android:orientation="vertical">
 
-
-
-            </GridLayout>
-
-            <CheckBox
-                android:id="@+id/AutoPlay"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:checked="true"
-                android:text="@string/autoPlay"
-                android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
-
-            <Button
-                android:id="@+id/refreshHosts"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center|center_horizontal"
-                android:text="@string/refresh"
-                android:textStyle="bold"
-                tools:layout_editor_absoluteX="0dp"
-                tools:layout_editor_absoluteY="0dp" />
-
-            <Button
-                android:id="@+id/upgrade"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-
-                android:text="@string/upgrade"
-                android:textStyle="bold"
-                tools:layout_editor_absoluteX="0dp"
-                tools:layout_editor_absoluteY="0dp" />
-
-            <Button
-                android:id="@+id/reboot"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-
-                android:text="@string/reboot"
-                android:textStyle="bold"
-                tools:layout_editor_absoluteX="0dp"
-                tools:layout_editor_absoluteY="0dp" />
-
-            <Button
-                android:id="@+id/shutdown"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/shutdown"
-                android:textStyle="bold"
-                tools:layout_editor_absoluteX="0dp"
-                tools:layout_editor_absoluteY="0dp" />
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/neverSet"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+            </ScrollView>
 
         </LinearLayout>
+
     </LinearLayout>
-</android.support.constraint.ConstraintLayout>
+
+</RelativeLayout>
 
 
 

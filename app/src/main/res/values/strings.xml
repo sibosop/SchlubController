@@ -1,33 +1,28 @@
 <resources>
     <string name="app_name">SchlubController</string>
     <string name="hLabel">Host:</string>
-    <string-array name="host_list">
-        <item>none</item>
-    </string-array>
-    <string name="master">Master:</string>
+    <string name="master">Master: </string>
     <string name="subnetDefault">255.255.255</string>
-    <string name="subnet">Subnet:</string>
+    <string name="subnet">Subnet: </string>
     <string name="volume">Volume: </string>
-    <string name="defMaster">None</string>
-    <string name="autoPlay">Auto Play</string>
     <string name="shutdown">Shutdown</string>
-    <string name="stop">Stop</string>
     <string name="reboot">Reboot</string>
     <string name="refresh">Refresh Hostlist</string>
     <string name="upgrade">Upgrade</string>
-    <string name="sound">Sound:</string>
+    <string name="sound">Sound: </string>
     <string name="auto">Auto</string>
-    <string name="phrase">Phrase:</string>
-    <string name="schlub">schlub</string>
+    <string name="phrase">Phrase: </string>
     <string name="matag">MainActivity</string>
     <string name="hostRefreshMessage">Refreshing Host List</string>
     <string name="returnHostRefreshMessage">Host List Refreshed</string>
     <string name="all">All Hosts</string>
     <string name="service">service:schlub.x</string>
-    <string name="global">Global</string>
-    <string name="local">Local</string>
     <string name="volumeCmd">vol?val=</string>
-    <string name="soundCmd">"player?play="</string>
     <string name="phraseCmd">"player?phrase="</string>
     <string name="neverSet">Never Set</string>
+    <string name="threads">Threads: </string>
+    <string name="speaker">Speaker: </string>
+    <string name="status">Status</string>
+    <string name="control">Control</string>
+    <string name="isMaster">Is Master</string>
 </resources>

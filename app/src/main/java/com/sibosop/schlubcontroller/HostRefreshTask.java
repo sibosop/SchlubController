@@ -104,14 +104,23 @@ public class HostRefreshTask extends AsyncTask<Context,HostInfo,HostInfo> {
     protected void onProgressUpdate(HostInfo... update) {
         if (update.length > 0) {
             Log.i("onProgressUpate", update[0].toString());
-            final TextView subnetView = (TextView)mActivity.findViewById(R.id.Subnet);
+            final TextView subnetView = (TextView)mActivity.findViewById(R.id.SubnetValue);
             subnetView.setText(update[0].subnet);
 
-            Spinner spinner = (Spinner) mActivity.findViewById(R.id.HostSpinner);
-            ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(mActivity,
+            Spinner statusHostSpinner = (Spinner) mActivity.findViewById(R.id.StatusHostSpinner);
+            ArrayAdapter<String> statusSpinnerAdapter = new ArrayAdapter<String>(mActivity,
                     android.R.layout.simple_spinner_item, update[0].ids);
-            spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-            spinner.setAdapter(spinnerAdapter);
+            statusSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            statusHostSpinner.setAdapter(statusSpinnerAdapter);
+
+            update[0].ids.add("all");
+            Spinner controlHostSpinner = (Spinner) mActivity.findViewById(R.id.ControlHostSpinner);
+            ArrayAdapter<String> controlSpinnerAdapter = new ArrayAdapter<String>(mActivity,
+                    android.R.layout.simple_spinner_item, update[0].ids);
+            controlSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            controlHostSpinner.setAdapter(controlSpinnerAdapter);
+
+
             mActivity.startHostInfoRefresh();
         }
     }

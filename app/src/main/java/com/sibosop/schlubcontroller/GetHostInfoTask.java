@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -67,15 +68,19 @@ class GetHostInfoTask extends AsyncTask<Void,ArrayList<SchlubHost>,Boolean>{
 
     private void updateServant(SchlubHost s){
         Log.i(tag, "updating servant " + s.toString());
-        final TextView volumeValue = (TextView) mActivity.findViewById(R.id.LocalVolumeValue);
-        if (!volumeValue.hasFocus())
-            volumeValue.setText(s.vol.toString());
-        final TextView SoundValue = (TextView) mActivity.findViewById(R.id.LocalSoundValue);
-        if ( !SoundValue.hasFocus())
-            SoundValue.setText(s.sound);
-        final TextView PhraseValue = (TextView) mActivity.findViewById(R.id.LocalPhraseValue);
-        if ( !PhraseValue.hasFocus())
-            PhraseValue.setText(s.phrase);
+        final TextView volumeValue = (TextView) mActivity.findViewById(R.id.VolumeValue);
+        volumeValue.setText(s.vol.toString());
+        final TextView SoundValue = (TextView) mActivity.findViewById(R.id.SoundValue);
+        SoundValue.setText(s.sound);
+        final TextView PhraseValue = (TextView) mActivity.findViewById(R.id.PhraseValue);
+        PhraseValue.setText(s.phrase);
+        final TextView threadsValue = (TextView) mActivity.findViewById(R.id.ThreadsValue);
+        threadsValue.setText(s.threads.toString());
+        final TextView speakerValue = (TextView) mActivity.findViewById(R.id.SpeakerValue);
+        speakerValue.setText(s.speaker);
+        final CheckBox masterCheckBox = (CheckBox) mActivity.findViewById(R.id.MasterCheckBox);
+        masterCheckBox.setChecked(s.isMaster);
+        mActivity.hostInfo.put(s.id,s);
     }
 
     @Override

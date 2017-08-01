@@ -11,11 +11,20 @@ class SchlubHost extends Object {
     Integer vol;
     String  sound;
     String  phrase;
+    Integer threads;
+    String  speaker;
 
 
     SchlubHost() {
         super();
-        id = "none";
+        id = "all";
+        status = "";
+        isMaster = false;
+        vol = 0;
+        sound = "";
+        phrase = "";
+        threads = 0;
+        speaker = "";
     }
     @Override
     public String toString() {
@@ -26,6 +35,8 @@ class SchlubHost extends Object {
                 + " " + vol.toString()
                 + " " + sound
                 + " " + phrase
+                + " " + threads.toString()
+                + " " + speaker
                 ;
     }
 }

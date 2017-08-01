@@ -29,11 +29,36 @@ import com.google.gson.Gson;
 import org.w3c.dom.Text;
 
 import java.util.ArrayList;
+import java.util.Dictionary;
+import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
-    HostInfo hostInfo;
+
     private String tag;
+    HashMap<String,SchlubHost> hostInfo = new HashMap<String,SchlubHost>();
+    Object getHostFromType(String key, String type) {
+        if (type.equals("volume"))
+            return hostInfo.get(key).vol;
+        else if (type.equals("threads"))
+            return hostInfo.get(key).threads;
+        else if (type.equals("sound"))
+            return hostInfo.get(key).sound;
+        else if (type.equals("phrase"))
+            return hostInfo.get(key).phrase;
+        return 0;
+    }
+    void setHostFromType(String key, String type, Object val) {
+        if (type.equals("volume"))
+            hostInfo.get(key).vol = (Integer)val;
+        else if (type.equals("threads"))
+            hostInfo.get(key).threads = (Integer)val;
+        else if (type.equals("sound"))
+            hostInfo.get(key).sound = (String)val;
+        else if (type.equals("phrase"))
+            hostInfo.get(key).phrase = (String)val;
+    }
 
     MainActivity() {
         super();
@@ -43,12 +68,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public ArrayList<String> getItemList(String item) {
         ArrayList<String> ids = new ArrayList<>();
         if (!item.equals("none")) {
-            if ( item.isEmpty()) {
-                final Spinner hostSpinner = (Spinner) findViewById(R.id.HostSpinner);
+            if ( item.equals("all")) {
+                final Spinner hostSpinner = (Spinner) findViewById(R.id.StatusHostSpinner);
                 SpinnerAdapter spinnerAdapter = hostSpinner.getAdapter();
                 int n = spinnerAdapter.getCount();
                 for (int i = 0; i < n; i++) {
-                    ids.add( (String)spinnerAdapter.getItem(i));
+                    String spinnerItem = (String)spinnerAdapter.getItem(i);
+                    if ( !spinnerItem.equals("all"))
+                        ids.add(spinnerItem);
                 }
             }
             else {
@@ -58,7 +85,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         return ids;
     }
     public String getSubnet() {
-        final TextView subnetView = (TextView) findViewById(R.id.Subnet);
+        final TextView subnetView = (TextView) findViewById(R.id.SubnetValue);
         String subnet = subnetView.getText().toString();
         if ( subnet == getString(R.string.subnetDefault))
             subnet = "";
@@ -67,38 +94,45 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public String getMaster() {
         final TextView masterView = (TextView) findViewById(R.id.MasterValue);
         String master = masterView.getText().toString();
-        if ( master == getString(R.string.defMaster) )
+        if ( master == getString(R.string.neverSet) )
             master = "";
         return master;
     }
-    public String getLocal() {
-        final Spinner hostSpinner = (Spinner) findViewById(R.id.HostSpinner);
+
+    public String getControlHost() {
+        final Spinner hostSpinner = (Spinner) findViewById(R.id.ControlHostSpinner);
         String item = (String) hostSpinner.getSelectedItem().toString();
         return item;
     }
 
+    public String getStatusHost() {
+        final Spinner statusSpinner = (Spinner) findViewById(R.id.StatusHostSpinner);
+        String item = (String) statusSpinner.getSelectedItem().toString();
+        return item;
+    }
 
     private AlertDialog setValueDialog;
-    private void doSetValueDialog(Boolean isGlobal,final String hostCmd,final TextView tv) {
+    private void doSetValueDialog(final String hostCmd,final String host,final String type) {
         if ( setValueDialog != null ) {
             setValueDialog.dismiss();
             setValueDialog = null;
         }
-        final String host;
-        if(isGlobal)
-            host = "";
-        else
-            host = getLocal();
 
 
         LayoutInflater inflater = LayoutInflater.from(getApplicationContext());
         final View setValueAlertView = inflater.inflate(R.layout.value_set_alert, null);
         final AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        Integer initValue = 0;
+        if ( type.equals("volume"))
+            initValue = hostInfo.get(host).vol;
+        else if ( type.equals("threads"))
+            initValue = hostInfo.get(host).threads;
+
 
         SeekBar seek=(SeekBar)setValueAlertView.findViewById(R.id.ValueSetSeekbar);
-        seek.setProgress(Integer.parseInt(tv.getText().toString()));
+        seek.setProgress(initValue);
         TextView textView = (TextView)setValueAlertView.findViewById(R.id.ValueSetValue);
-        textView.setText(tv.getText());
+        textView.setText(String.valueOf(initValue));
         seek.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener(){
 
             @Override
@@ -129,8 +163,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 String val = textView.getText().toString();
                 Log.i(tag,"got value"+val);
                 String endCmd = hostCmd + val;
-                new SendCmdTask(MainActivity.this,host).execute(endCmd);
-                tv.setText(textView.getText());
+                String setHost = host;
+                if ( setHost.equals(getString(R.string.all)))
+                    setHost = "";
+                new SendCmdTask(MainActivity.this,setHost).execute(endCmd);
+                if ( type.equals("volume"))
+                    hostInfo.get(host).vol = Integer.parseInt(val);
+                else if ( type.equals("threads"))
+                    hostInfo.get(host).vol = Integer.parseInt(val);
+
             }
         });
 
@@ -145,17 +186,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setValueDialog.show();
     }
     private AlertDialog setStringDialog;
-    private void doSetStringDialog(Boolean isGlobal,final int cmd,
-                    final TextView value,String title) {
+    private void doSetStringDialog(final String cmd, final String host, final String title) {
         if ( setStringDialog != null ) {
             setStringDialog.dismiss();
             setStringDialog = null;
         }
-        final String host;
-        if(isGlobal)
-            host = "";
-        else
-            host = getLocal();
 
 
         LayoutInflater inflater = LayoutInflater.from(getApplicationContext());
@@ -167,8 +202,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         titleView.setText(title);
 
         final EditText valueView = (EditText)setStringAlertView.findViewById(R.id.StringTextValue);
-        valueView.setText(value.getText());
-
+        valueView.setText((String)getHostFromType(host,title));
 
         alert.setView(setStringAlertView);
         alert.setPositiveButton("Set",new DialogInterface.OnClickListener()
@@ -176,11 +210,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public void onClick(DialogInterface dialog,int id)
             {
                 TextView textView = (TextView)setStringAlertView.findViewById(R.id.StringTextValue);
-                String endCmd = getString(cmd) + textView.getText().toString();
-                if ( cmd == R.string.soundCmd )
+                String endCmd = cmd + textView.getText().toString();
+                if ( title.equals("sound") )
                     endCmd += ".wav";
                 new SendCmdTask(MainActivity.this,host).execute(endCmd);
-                value.setText(textView.getText());
             }
         });
 
@@ -205,7 +238,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             // Repeat this the same runnable code block again another 2 seconds
             // 'this' is referencing the Runnable object
             ArrayList<String> hosts = new ArrayList<String>();
-            String host = getLocal();
+            String host = getStatusHost();
             if (!host.isEmpty()) {
                 hosts.add(host);
             }
@@ -228,28 +261,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         // do something when the button is clicked
         // Yes we will handle click here but which button clicked??? We don't know
         String[] cmd = new String[1];
-        String host = "";
-        boolean isGlobal = false;
-
+        String host = getControlHost();
         // So we will make
         switch (v.getId() /*to get clicked view id**/) {
-            case R.id.VolumeValue:
-                isGlobal = true;
-            case R.id.LocalVolumeValue:
-                Log.i(tag,"VolumeValue change request");
-                doSetValueDialog(isGlobal,getString(R.string.volumeCmd),(TextView)v);
+            case R.id.VolumeButton:
+                doSetValueDialog(getString(R.string.volumeCmd),host,"volume");
                 return;
 
-            case R.id.PhraseValue:
-                isGlobal = true;
-            case R.id.LocalPhraseLabel:
-                doSetStringDialog(isGlobal,R.string.phraseCmd,(TextView)v,"Set Phrase");
+            case R.id.PhraseButton:
+                doSetStringDialog(getString(R.string.phraseCmd),host,"phrase");
                 return;
 
-            case R.id.SoundValue:
-                isGlobal = true;
-            case R.id.LocalSoundValue:
-                doSetStringDialog(isGlobal,R.string.soundCmd,(TextView)v,"Set Sound");
+            case R.id.SoundButton:
+                doSetStringDialog(getString(R.string.phraseCmd),host,"sound");
+                return;
+
+            case R.id.ThreadsButton:
+                doSetValueDialog(getString(R.string.phraseCmd),host,"threads");
                 return;
 
             case R.id.AutoPlay:
@@ -263,56 +291,51 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Log.i(tag,"click on Auto Play"+cmd[0]);
                 break;
 
-            case R.id.shutdown:
+            case R.id.ShutdownButton:
                 Log.i(tag,"click on host shutdown");
                 stopHostInfoRefresh();
                 cmd[0] = "poweroff";
                 break;
 
-            case R.id.reboot:
+            case R.id.RebootButton:
                 Log.i(tag,"click on reboot");
                 stopHostInfoRefresh();
                 cmd[0] = "reboot";
                 break;
 
-            case R.id.upgrade:
+            case R.id.UpgradeButton:
                 Log.i(tag,"click on host upgrade");
                 stopHostInfoRefresh();
                 cmd[0] = "upgrade";
                 break;
 
-            case R.id.LocalShutdown:
-                cmd[0] = "poweroff";
-                stopHostInfoRefresh();
-                host = getLocal();
-                Log.i(tag,"click on host shutdown"+host);
-                break;
-
-            case R.id.LocalReboot:
-                cmd[0] = "reboot";
-                stopHostInfoRefresh();
-                host = getLocal();
-                Log.i(tag,"click on reboot"+host);
-                break;
-
-            case R.id.LocalUpgrade:
-                cmd[0] = "upgrade";
-                stopHostInfoRefresh();
-                host = getLocal();
-                Log.i(tag,"click on host upgrade"+host);
-                break;
-
-            case R.id.refreshHosts:
+            case R.id.RefreshButton:
                 Log.i(tag,"click on host refresh");
                 new HostRefreshTask(this).execute(getBaseContext());
 
             default:
                 return;
         }
+        if ( host.equals(getString(R.string.all)))
+            host = "";
         new SendCmdTask(MainActivity.this,host).execute(cmd);
     }
-
-
+    private int[] clickList = new int[] {
+            R.id.VolumeButton
+            ,R.id.SoundButton
+            ,R.id.PhraseButton
+            ,R.id.ThreadsButton
+            ,R.id.RebootButton
+            ,R.id.UpgradeButton
+            ,R.id.ShutdownButton
+            ,R.id.RefreshButton
+    };
+    private void setButtons() {
+        for (int i = 0; i < clickList.length; ++i ) {
+            Button b = (Button)findViewById(clickList[i]);
+            b.setOnClickListener(this);
+        }
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -324,53 +347,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 setContentView(R.layout.activity_main);
             }
         });
+        hostInfo.put("all",new SchlubHost());
+        setButtons();
 
-
-        final TextView volText = (TextView) findViewById(R.id.VolumeValue);
-        volText.setOnClickListener(this);
-
-        final TextView localVolText = (TextView) findViewById(R.id.LocalVolumeValue);
-        localVolText.setOnClickListener(this);
-
-
-        final TextView soundText = (TextView) findViewById(R.id.SoundValue);
-        soundText.setOnClickListener(this);
-
-        final TextView phraseText = (TextView) findViewById(R.id.PhraseValue);
-        phraseText.setOnClickListener(this);
-
-        final TextView localSoundText = (TextView) findViewById(R.id.LocalSoundValue);
-        localSoundText.setOnClickListener(this);
-
-        final TextView localPhraseText = (TextView) findViewById(R.id.LocalPhraseValue);
-        localPhraseText.setOnClickListener(this);
-
-        final Button refreshButton = (Button)findViewById(R.id.refreshHosts);
-        refreshButton.setOnClickListener(this);
-
-        final Button rebootButton = (Button)findViewById(R.id.reboot);
-        rebootButton.setOnClickListener(this);
-
-        final Button upgradeButton = (Button)findViewById(R.id.upgrade);
-        upgradeButton.setOnClickListener(this);
-
-        final Button shutdownButton = (Button)findViewById(R.id.shutdown);
-        shutdownButton.setOnClickListener(this);
-
-        final Button localRebootButton = (Button)findViewById(R.id.LocalReboot);
-        localRebootButton.setOnClickListener(this);
-
-        final Button localUpgradeButton = (Button)findViewById(R.id.LocalUpgrade);
-        localUpgradeButton.setOnClickListener(this);
-
-        final Button localShutdownButton = (Button)findViewById(R.id.LocalShutdown);
-        localShutdownButton.setOnClickListener(this);
-
-        final CheckBox autoBox = (CheckBox) findViewById(R.id.AutoPlay);
-        autoBox.setOnClickListener(this);
-
-        final Spinner hostSpinner = (Spinner) findViewById(R.id.HostSpinner);
-        hostSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        final Spinner statusHostSpinner =  (Spinner) findViewById(R.id.StatusHostSpinner);
+        statusHostSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view,
                                        int position, long id) {
@@ -383,8 +364,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
 
-
-
+        final Spinner controlHostSpinner = (Spinner) findViewById(R.id.ControlHostSpinner);
+        controlHostSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view,
+                                       int position, long id) {
+                String item = (String) parent.getItemAtPosition(position);
+                new GetHostInfoTask(MainActivity.this,getItemList(item)).execute();
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                // TODO Auto-generated method stub
+            }
+        });
     }
 
 }
