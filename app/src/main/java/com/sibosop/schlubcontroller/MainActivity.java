@@ -123,14 +123,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         final View setValueAlertView = inflater.inflate(R.layout.value_set_alert, null);
         final AlertDialog.Builder alert = new AlertDialog.Builder(this);
         Integer initValue = 0;
-        if ( type.equals("volume"))
+        Integer max = 100;
+        if (  type.equals("volume")) {
             initValue = hostInfo.get(host).vol;
-        else if ( type.equals("threads"))
+            max = 100;
+        }
+        else if ( type.equals("threads")) {
             initValue = hostInfo.get(host).threads;
-
+            max = 10;
+        }
 
         SeekBar seek=(SeekBar)setValueAlertView.findViewById(R.id.ValueSetSeekbar);
         seek.setProgress(initValue);
+        seek.setMax(max);
         TextView textView = (TextView)setValueAlertView.findViewById(R.id.ValueSetValue);
         textView.setText(String.valueOf(initValue));
         seek.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener(){
@@ -238,11 +243,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             // Repeat this the same runnable code block again another 2 seconds
             // 'this' is referencing the Runnable object
             ArrayList<String> hosts = new ArrayList<String>();
-            String host = getStatusHost();
-            if (!host.isEmpty()) {
-                hosts.add(host);
+            if ( getMaster().isEmpty() ) {
+                hosts = getItemList("all");
+            } else {
+                String host = getStatusHost();
+                if (!host.isEmpty()) {
+                    hosts.add(host);
+                }
             }
-            new GetHostInfoTask(MainActivity.this,hosts).execute();
+            new GetHostInfoTask(MainActivity.this, hosts).execute();
             handler.postDelayed(this, 10000);
         }
     };
@@ -273,23 +282,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 return;
 
             case R.id.SoundButton:
-                doSetStringDialog(getString(R.string.phraseCmd),host,"sound");
+                doSetStringDialog(getString(R.string.soundCmd),host,"sound");
                 return;
 
             case R.id.ThreadsButton:
-                doSetValueDialog(getString(R.string.phraseCmd),host,"threads");
+                doSetValueDialog(getString(R.string.threadsCmd),host,"threads");
                 return;
 
-            case R.id.AutoPlay:
-                boolean isChecked = ((CheckBox) findViewById(R.id.AutoPlay)).isChecked();
-                if (isChecked) {
-                    cmd[0] = "auto";
-                } else {
-                    cmd[0] = "manual";
-                }
-                host = getMaster();
-                Log.i(tag,"click on Auto Play"+cmd[0]);
-                break;
 
             case R.id.ShutdownButton:
                 Log.i(tag,"click on host shutdown");
@@ -349,7 +348,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         });
         hostInfo.put("all",new SchlubHost());
         setButtons();
-
+        CheckBox autoPlay   = ( CheckBox ) findViewById( R.id.AutoPlay );
+        autoPlay.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String master = getMaster();
+                if (master.isEmpty())
+                    return;
+                if ( ((CheckBox)v).isChecked() ) {
+                    new SendCmdTask(MainActivity.this,master).execute(getString(R.string.autoCmd));
+                } else {
+                    new SendCmdTask(MainActivity.this,master).execute(getString(R.string.manualCmd));
+                }
+            }
+        });
         final Spinner statusHostSpinner =  (Spinner) findViewById(R.id.StatusHostSpinner);
         statusHostSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override

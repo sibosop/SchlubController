@@ -60,7 +60,7 @@ public class HostRefreshTask extends AsyncTask<Context,HostInfo,HostInfo> {
         scopes.add("default");
 
         Resources r = contexts[0].getResources();
-        HostInfo rval = new HostInfo();
+        HostInfo hostInfo = new HostInfo();
         Log.i(r.getString(R.string.matag), r.getString(R.string.hostRefreshMessage));
         try {
             String selector = "";
@@ -79,15 +79,15 @@ public class HostRefreshTask extends AsyncTask<Context,HostInfo,HostInfo> {
                         Log.e("finding host Id","error in parse:"+parse);
                         break;
                     }
-                    if ( rval.subnet.isEmpty() ) {
+                    if ( hostInfo.subnet.isEmpty() ) {
                         int i = parse.lastIndexOf("//");
                         if ( i == -1 ) {
                             Log.e("finding subnet","subnet delimiter // not found!!");
                             break;
                         }
-                        rval.subnet = parse.substring(i+2,j);
+                        hostInfo.subnet = parse.substring(i+2,j);
                     }
-                    rval.ids.add(parse.substring(j+1));
+                    hostInfo.ids.add(parse.substring(j+1));
                 }
             }
 
@@ -95,10 +95,10 @@ public class HostRefreshTask extends AsyncTask<Context,HostInfo,HostInfo> {
         catch (com.solers.slp.ServiceLocationException e){
             Log.i("slp",e.toString());
         }
-        rval.sort();
-        publishProgress(rval);
-        Log.i(r.getString(R.string.matag), r.getString(R.string.returnHostRefreshMessage) + ":" +rval.toString());
-        return rval;
+        hostInfo.sort();
+        publishProgress(hostInfo);
+        Log.i(r.getString(R.string.matag), r.getString(R.string.returnHostRefreshMessage) + ":" +hostInfo.toString());
+        return hostInfo;
     }
     @Override
     protected void onProgressUpdate(HostInfo... update) {
@@ -106,10 +106,11 @@ public class HostRefreshTask extends AsyncTask<Context,HostInfo,HostInfo> {
             Log.i("onProgressUpate", update[0].toString());
             final TextView subnetView = (TextView)mActivity.findViewById(R.id.SubnetValue);
             subnetView.setText(update[0].subnet);
+            HostInfo hostInfo = update[0].fuckingDeepCopy();
 
             Spinner statusHostSpinner = (Spinner) mActivity.findViewById(R.id.StatusHostSpinner);
             ArrayAdapter<String> statusSpinnerAdapter = new ArrayAdapter<String>(mActivity,
-                    android.R.layout.simple_spinner_item, update[0].ids);
+                    android.R.layout.simple_spinner_item, hostInfo.ids);
             statusSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             statusHostSpinner.setAdapter(statusSpinnerAdapter);
 

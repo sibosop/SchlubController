@@ -32,4 +32,12 @@ class HostInfo extends Object {
             }
         });
     }
+    public HostInfo fuckingDeepCopy()
+    {
+        HostInfo rval = new HostInfo();
+        rval.subnet = subnet;
+        for ( String id : ids )
+            rval.ids.add(id);
+        return rval;
+    }
 }

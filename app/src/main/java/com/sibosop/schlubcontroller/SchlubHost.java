@@ -8,6 +8,7 @@ class SchlubHost extends Object {
     String  id;
     String  status;
     Boolean isMaster;
+    Boolean auto;
     Integer vol;
     String  sound;
     String  phrase;
@@ -20,6 +21,7 @@ class SchlubHost extends Object {
         id = "all";
         status = "";
         isMaster = false;
+        auto = true;
         vol = 0;
         sound = "";
         phrase = "";
@@ -32,6 +34,7 @@ class SchlubHost extends Object {
                 id
                 + " " + status
                 + " " + isMaster.toString()
+                + " " + auto.toString()
                 + " " + vol.toString()
                 + " " + sound
                 + " " + phrase
