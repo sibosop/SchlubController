@@ -8,6 +8,7 @@ import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.internal.widget.AdapterViewCompat;
+import android.text.Layout;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,6 +18,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
@@ -63,6 +65,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     MainActivity() {
         super();
         tag = this.getClass().getSimpleName();
+    }
+    public void uiLog(String line)
+    {
+        ScrollView sv = (ScrollView)findViewById(R.id.LogScrollView);
+        TextView tv = (TextView)findViewById(R.id.UiLogText);
+        sv.scrollTo(0, sv.getBottom());
+        tv.append("\n"+line);
     }
 
     public ArrayList<String> getItemList(String item) {
@@ -256,15 +265,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     };
 
-
-
-    public void startHostInfoRefresh() {
-        handler.removeCallbacks(hostInfoRefresh);
-        handler.postDelayed(hostInfoRefresh,1000);
-    }
     public void stopHostInfoRefresh() {
         handler.removeCallbacks(hostInfoRefresh);
     }
+    public void startHostInfoRefresh() {
+        stopHostInfoRefresh();
+        handler.postDelayed(hostInfoRefresh,1000);
+    }
+
     @Override
     public void onClick(View v) {
         // do something when the button is clicked
@@ -341,11 +349,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         new HostRefreshTask(this).execute(getBaseContext());
 
+
+
         runOnUiThread(new Runnable() {
             public void run() {
                 setContentView(R.layout.activity_main);
             }
         });
+
         hostInfo.put("all",new SchlubHost());
         setButtons();
         CheckBox autoPlay   = ( CheckBox ) findViewById( R.id.AutoPlay );

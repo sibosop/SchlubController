@@ -1,6 +1,7 @@
 package com.sibosop.schlubcontroller;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.res.Resources;
 import android.os.AsyncTask;
@@ -27,7 +28,7 @@ import java.util.Vector;
  * Created by brian on 7/23/17.
  */
 
-public class HostRefreshTask extends AsyncTask<Context,HostInfo,HostInfo> {
+public class HostRefreshTask extends AsyncTask<Context,String,HostInfo> {
     private Locator loc;
     Vector scopes = new Vector();
     MainActivity mActivity;
@@ -36,6 +37,17 @@ public class HostRefreshTask extends AsyncTask<Context,HostInfo,HostInfo> {
         super();
         mActivity = activity;
         service = mActivity.getResources().getString(R.string.service);
+    }
+    private ProgressDialog pDialog;
+    @Override
+    protected void onPreExecute()
+    {
+        pDialog = new ProgressDialog(mActivity);
+        pDialog.setMessage("Gathering host data...");
+        pDialog.setIndeterminate(false);
+        pDialog.setCancelable(false);
+        pDialog.show();
+        super.onPreExecute();
     }
     @Override
     protected HostInfo doInBackground(Context... contexts) {
@@ -87,7 +99,9 @@ public class HostRefreshTask extends AsyncTask<Context,HostInfo,HostInfo> {
                         }
                         hostInfo.subnet = parse.substring(i+2,j);
                     }
-                    hostInfo.ids.add(parse.substring(j+1));
+                    String hostId = parse.substring(j+1);
+                    hostInfo.ids.add(hostId);
+                    publishProgress(hostId);
                 }
             }
 
@@ -96,33 +110,43 @@ public class HostRefreshTask extends AsyncTask<Context,HostInfo,HostInfo> {
             Log.i("slp",e.toString());
         }
         hostInfo.sort();
-        publishProgress(hostInfo);
+
         Log.i(r.getString(R.string.matag), r.getString(R.string.returnHostRefreshMessage) + ":" +hostInfo.toString());
         return hostInfo;
     }
     @Override
-    protected void onProgressUpdate(HostInfo... update) {
-        if (update.length > 0) {
-            Log.i("onProgressUpate", update[0].toString());
-            final TextView subnetView = (TextView)mActivity.findViewById(R.id.SubnetValue);
-            subnetView.setText(update[0].subnet);
-            HostInfo hostInfo = update[0].fuckingDeepCopy();
-
-            Spinner statusHostSpinner = (Spinner) mActivity.findViewById(R.id.StatusHostSpinner);
-            ArrayAdapter<String> statusSpinnerAdapter = new ArrayAdapter<String>(mActivity,
-                    android.R.layout.simple_spinner_item, hostInfo.ids);
-            statusSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-            statusHostSpinner.setAdapter(statusSpinnerAdapter);
-
-            update[0].ids.add("all");
-            Spinner controlHostSpinner = (Spinner) mActivity.findViewById(R.id.ControlHostSpinner);
-            ArrayAdapter<String> controlSpinnerAdapter = new ArrayAdapter<String>(mActivity,
-                    android.R.layout.simple_spinner_item, update[0].ids);
-            controlSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-            controlHostSpinner.setAdapter(controlSpinnerAdapter);
+    protected void onProgressUpdate(String...id){
+        super.onProgressUpdate(id);
+        //pDialog.setMessage("Found:"+id[0]);
+    }
 
 
-            mActivity.startHostInfoRefresh();
-        }
+    @Override
+    protected void onPostExecute(HostInfo update) {
+
+        mActivity.uiLog("onPostExecute" +
+                "" +
+                ""+ update.toString());
+        final TextView subnetView = (TextView)mActivity.findViewById(R.id.SubnetValue);
+        subnetView.setText(update.subnet);
+        HostInfo hostInfo = update.fuckingDeepCopy();
+
+        Spinner statusHostSpinner = (Spinner) mActivity.findViewById(R.id.StatusHostSpinner);
+        ArrayAdapter<String> statusSpinnerAdapter = new ArrayAdapter<String>(mActivity,
+                android.R.layout.simple_spinner_item, hostInfo.ids);
+        statusSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        statusHostSpinner.setAdapter(statusSpinnerAdapter);
+
+        update.ids.add("all");
+        Spinner controlHostSpinner = (Spinner) mActivity.findViewById(R.id.ControlHostSpinner);
+        ArrayAdapter<String> controlSpinnerAdapter = new ArrayAdapter<String>(mActivity,
+                android.R.layout.simple_spinner_item, update.ids);
+        controlSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        controlHostSpinner.setAdapter(controlSpinnerAdapter);
+
+        pDialog.dismiss();
+        mActivity.startHostInfoRefresh();
+        super.onPostExecute(update);
+
     }
 }

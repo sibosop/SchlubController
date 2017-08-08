@@ -15,13 +15,15 @@ import javax.net.ssl.HttpsURLConnection;
  */
 
 class SclubRequest {
+    MainActivity mainActivity;
     private String hostAddr;
     private String tag;
     private final String port="8080";
     private final String USER_AGENT = "Mozilla/5.0";
-    public SclubRequest(String subnet, String host) {
+    public SclubRequest(MainActivity mActivity, String subnet, String host) {
         hostAddr = subnet+"."+host;
         tag = this.getClass().getSimpleName();
+        mainActivity = mActivity;
     }
 
 
@@ -45,6 +47,7 @@ class SclubRequest {
 
             int responseCode = con.getResponseCode();
             Log.i(tag,"Sending 'GET' request to URL : " + url);
+            //mainActivity.uiLog("Sending 'GET' request to URL : " + url);
             System.out.println("Response Code : " + responseCode);
 
             BufferedReader in = new BufferedReader(

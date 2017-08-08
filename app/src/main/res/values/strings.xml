@@ -22,6 +22,7 @@
     <string name="soundCmd">player?play=</string>
     <string name="threadsCmd">threads?n=</string>
     <string name="autoCmd">auto</string>
+    <string name="sLogLabel">Status Log</string>
     <string name="manualCmd">manual</string>
     <string name="neverSet">Never Set</string>
     <string name="threads">Threads: </string>

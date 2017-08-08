@@ -41,7 +41,7 @@ public class SendCmdTask extends AsyncTask <String,String,Boolean> {
                     return rval;
                 ArrayList<String> ids = mActivity.getItemList(host);
                 for ( int i = 0; i < ids.size(); ++i ) {
-                    String response = new SclubRequest(subnet, ids.get(i)).send(cmd);
+                    String response = new SclubRequest(mActivity, subnet, ids.get(i)).send(cmd);
                     SchlubStatus s = gson.fromJson(response, SchlubStatus.class);
                     Log.i(tag,"cmd:"+cmd+" status:"+s.toString());
                     rval = Boolean.TRUE;

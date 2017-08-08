@@ -16,6 +16,7 @@
             android:id="@+id/StatusLayout"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
+            android:layout_weight="1"
             android:background="@drawable/border"
             android:orientation="vertical">
 
@@ -296,6 +297,7 @@
         android:id="@+id/GlobalLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_weight="1"
         android:layout_alignParentStart="true"
         android:layout_below="@+id/ControlLayout"
         android:orientation="horizontal">
@@ -313,7 +315,6 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentStart="true"
                 android:layout_below="@+id/ControlLayout"
-                android:layout_weight="1"
                 android:orientation="horizontal">
 
                 <TextView
@@ -359,7 +360,6 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:orientation="horizontal">
 
                 <CheckBox
@@ -375,29 +375,42 @@
                     android:id="@+id/RefreshButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
                     android:text="@string/refresh" />
 
             </LinearLayout>
 
-            <ScrollView
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1">
+                android:layout_weight="1"
+                android:orientation="vertical">
 
-                <LinearLayout
-                    android:layout_width="match_parent"
+                <TextView
+                    android:id="@+id/LogViewLabel"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical">
+                    android:layout_gravity="center"
+                    android:text="@string/sLogLabel"
+                    android:textSize="24sp"
+                    android:textStyle="bold" />
+
+                <ScrollView
+                    android:id="@+id/LogScrollView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:fillViewport="true"
+                    android:scrollbars="vertical">
 
                     <TextView
+                        android:id="@+id/UiLogText"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/neverSet"
+                        android:text=""
                         android:textSize="18sp"
                         android:textStyle="bold" />
-                </LinearLayout>
-            </ScrollView>
+                </ScrollView>
+            </LinearLayout>
 
         </LinearLayout>
 
