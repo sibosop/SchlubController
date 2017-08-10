@@ -18,7 +18,7 @@
     <string name="all">All Hosts</string>
     <string name="service">service:schlub.x</string>
     <string name="volumeCmd">vol?val=</string>
-    <string name="phraseCmd">player?phrase=</string>
+    <string name="phraseCmd">phrase?p=</string>
     <string name="soundCmd">player?play=</string>
     <string name="threadsCmd">threads?n=</string>
     <string name="autoCmd">auto</string>

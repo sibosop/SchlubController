@@ -224,9 +224,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public void onClick(DialogInterface dialog,int id)
             {
                 TextView textView = (TextView)setStringAlertView.findViewById(R.id.StringTextValue);
-                String endCmd = cmd + textView.getText().toString();
+                String tvs = textView.getText().toString();
+                String endCmd = cmd;
+                if ( tvs.isEmpty())
+                    endCmd += "--";
+                else
+                    endCmd = cmd + tvs;
+
                 if ( title.equals("sound") )
                     endCmd += ".wav";
+                else if ( title.equals("phrase"))
+                {
+                    endCmd = endCmd.replace(" ","-");
+                }
                 new SendCmdTask(MainActivity.this,host).execute(endCmd);
             }
         });
