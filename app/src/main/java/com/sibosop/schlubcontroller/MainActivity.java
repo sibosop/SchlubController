@@ -216,7 +216,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         titleView.setText(title);
 
         final EditText valueView = (EditText)setStringAlertView.findViewById(R.id.StringTextValue);
+
         valueView.setText((String)getHostFromType(host,title));
+        valueView.setSelectAllOnFocus(true);
+        valueView.requestFocus();
 
         alert.setView(setStringAlertView);
         alert.setPositiveButton("Set",new DialogInterface.OnClickListener()
