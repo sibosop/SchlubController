@@ -40,26 +40,37 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private String tag;
     HashMap<String,SchlubHost> hostInfo = new HashMap<String,SchlubHost>();
-    Object getHostFromType(String key, String type) {
-        if (type.equals("volume"))
-            return hostInfo.get(key).vol;
-        else if (type.equals("threads"))
-            return hostInfo.get(key).threads;
-        else if (type.equals("sound"))
-            return hostInfo.get(key).sound;
-        else if (type.equals("phrase"))
-            return hostInfo.get(key).phrase;
+    Object getHostFromType(String key, int type) {
+        switch (type) {
+            case R.string.volumeCmd:
+                return hostInfo.get(key).vol;
+
+            case R.string.threadsCmd:
+                return hostInfo.get(key).threads;
+
+            case R.string.soundCmd:
+                return hostInfo.get(key).sound;
+
+            case R.string.phraseCmd:
+                return hostInfo.get(key).phrase;
+        }
         return 0;
     }
-    void setHostFromType(String key, String type, Object val) {
-        if (type.equals("volume"))
-            hostInfo.get(key).vol = (Integer)val;
-        else if (type.equals("threads"))
-            hostInfo.get(key).threads = (Integer)val;
-        else if (type.equals("sound"))
-            hostInfo.get(key).sound = (String)val;
-        else if (type.equals("phrase"))
-            hostInfo.get(key).phrase = (String)val;
+    void setHostFromType(String key, int type, Object val) {
+        switch ( type ) {
+            case R.string.volumeCmd:
+                hostInfo.get(key).vol = (Integer)val;
+                break;
+            case R.string.threadsCmd:
+                hostInfo.get(key).threads = (Integer)val;
+                break;
+            case R.string.soundCmd:
+                hostInfo.get(key).sound = (String)val;
+                break;
+            case R.string.phraseCmd:
+                hostInfo.get(key).phrase = (String)val;
+                break;
+        }
     }
 
     MainActivity() {
@@ -121,7 +132,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private AlertDialog setValueDialog;
-    private void doSetValueDialog(final String hostCmd,final String host,final String type) {
+    private void doSetValueDialog(final int  hostCmd,final String host) {
         if ( setValueDialog != null ) {
             setValueDialog.dismiss();
             setValueDialog = null;
@@ -133,11 +144,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         final AlertDialog.Builder alert = new AlertDialog.Builder(this);
         Integer initValue = 0;
         Integer max = 100;
-        if (  type.equals("volume")) {
+        if (  hostCmd == R.string.volumeCmd) {
             initValue = hostInfo.get(host).vol;
             max = 100;
         }
-        else if ( type.equals("threads")) {
+        else if ( hostCmd==R.string.threadsCmd) {
             initValue = hostInfo.get(host).threads;
             max = 10;
         }
@@ -176,15 +187,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 TextView textView = (TextView)setValueAlertView.findViewById(R.id.ValueSetValue);
                 String val = textView.getText().toString();
                 Log.i(tag,"got value"+val);
-                String endCmd = hostCmd + val;
+                SchlubCmd endCmd = new SchlubCmd(getString(hostCmd));
+                endCmd.putArg(val);
                 String setHost = host;
                 if ( setHost.equals(getString(R.string.all)))
                     setHost = "";
-                new SendCmdTask(MainActivity.this,setHost).execute(endCmd);
-                if ( type.equals("volume"))
+
+                new SendCmdTask(MainActivity.this,setHost).execute(endCmd.getJson());
+                if ( hostCmd == R.string.volumeCmd)
                     hostInfo.get(host).vol = Integer.parseInt(val);
-                else if ( type.equals("threads"))
-                    hostInfo.get(host).vol = Integer.parseInt(val);
+                else if ( hostCmd == R.string.threadsCmd)
+                    hostInfo.get(host).threads = Integer.parseInt(val);
 
             }
         });
@@ -200,7 +213,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setValueDialog.show();
     }
     private AlertDialog setStringDialog;
-    private void doSetStringDialog(final String cmd, final String host, final String title) {
+    private void doSetStringDialog(final int cmd, final String host) {
         if ( setStringDialog != null ) {
             setStringDialog.dismiss();
             setStringDialog = null;
@@ -213,11 +226,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
         TextView titleView = (TextView)setStringAlertView.findViewById(R.id.StringSetTitle);
-        titleView.setText(title);
+        titleView.setText(getString(cmd));
 
         final EditText valueView = (EditText)setStringAlertView.findViewById(R.id.StringTextValue);
 
-        valueView.setText((String)getHostFromType(host,title));
+        valueView.setText((String)getHostFromType(host,cmd));
         valueView.setSelectAllOnFocus(true);
         valueView.requestFocus();
 
@@ -228,19 +241,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             {
                 TextView textView = (TextView)setStringAlertView.findViewById(R.id.StringTextValue);
                 String tvs = textView.getText().toString();
-                String endCmd = cmd;
-                if ( tvs.isEmpty())
-                    endCmd += "--";
-                else
-                    endCmd = cmd + tvs;
-
-                if ( title.equals("sound") )
-                    endCmd += ".wav";
-                else if ( title.equals("phrase"))
-                {
-                    endCmd = endCmd.replace(" ","-");
-                }
-                new SendCmdTask(MainActivity.this,host).execute(endCmd);
+                SchlubCmd endCmd = new SchlubCmd(getString(cmd));
+                if ( cmd ==R.string.soundCmd )
+                    tvs += ".wav";
+                endCmd.putArg(tvs);
+                new SendCmdTask(MainActivity.this,host).execute(endCmd.getJson());
             }
         });
 
@@ -290,43 +295,44 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
         // do something when the button is clicked
         // Yes we will handle click here but which button clicked??? We don't know
-        String[] cmd = new String[1];
+
+        SchlubCmd schlubCmd = new SchlubCmd();
         String host = getControlHost();
         // So we will make
         switch (v.getId() /*to get clicked view id**/) {
             case R.id.VolumeButton:
-                doSetValueDialog(getString(R.string.volumeCmd),host,"volume");
+                doSetValueDialog(R.string.volumeCmd,host);
                 return;
 
             case R.id.PhraseButton:
-                doSetStringDialog(getString(R.string.phraseCmd),host,"phrase");
+                doSetStringDialog(R.string.phraseCmd,host);
                 return;
 
             case R.id.SoundButton:
-                doSetStringDialog(getString(R.string.soundCmd),host,"sound");
+                doSetStringDialog(R.string.soundCmd,host);
                 return;
 
             case R.id.ThreadsButton:
-                doSetValueDialog(getString(R.string.threadsCmd),host,"threads");
+                doSetValueDialog(R.string.threadsCmd,host);
                 return;
 
 
             case R.id.ShutdownButton:
                 Log.i(tag,"click on host shutdown");
                 stopHostInfoRefresh();
-                cmd[0] = "poweroff";
+                schlubCmd = new SchlubCmd("Poweroff");
                 break;
 
             case R.id.RebootButton:
                 Log.i(tag,"click on reboot");
                 stopHostInfoRefresh();
-                cmd[0] = "reboot";
+                schlubCmd = new SchlubCmd("Reboot");
                 break;
 
             case R.id.UpgradeButton:
                 Log.i(tag,"click on host upgrade");
                 stopHostInfoRefresh();
-                cmd[0] = "upgrade";
+                schlubCmd = new SchlubCmd("Upgrade");
                 break;
 
             case R.id.RefreshButton:
@@ -338,7 +344,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
         if ( host.equals(getString(R.string.all)))
             host = "";
-        new SendCmdTask(MainActivity.this,host).execute(cmd);
+
+
+        new SendCmdTask(MainActivity.this,host).execute(schlubCmd.getJson());
     }
     private int[] clickList = new int[] {
             R.id.VolumeButton
@@ -380,9 +388,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 if (master.isEmpty())
                     return;
                 if ( ((CheckBox)v).isChecked() ) {
-                    new SendCmdTask(MainActivity.this,master).execute(getString(R.string.autoCmd));
+                    SchlubCmd cmd = new SchlubCmd(getString(R.string.autoCmd));
+                    new SendCmdTask(MainActivity.this,master).execute(cmd.getJson());
                 } else {
-                    new SendCmdTask(MainActivity.this,master).execute(getString(R.string.manualCmd));
+                    SchlubCmd cmd = new SchlubCmd(getString(R.string.manualCmd));
+                    new SendCmdTask(MainActivity.this,master).execute(cmd.getJson());
                 }
             }
         });

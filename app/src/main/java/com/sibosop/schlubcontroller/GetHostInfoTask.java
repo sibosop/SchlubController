@@ -46,7 +46,8 @@ class GetHostInfoTask extends AsyncTask<Void,ArrayList<SchlubHost>,Boolean>{
 
             for(int i = 0; i < hostList.size();++i) {
                 String id = hostList.get(i);
-                String response = new SclubRequest(mActivity,subnet,id).send("probe");
+                SchlubCmd schlubCmd = new SchlubCmd("Probe");
+                String response = new SclubRequest(mActivity,subnet,id).send(schlubCmd.getJson());
                 SchlubHost s = gson.fromJson(response, SchlubHost.class);
                 s.id = id;
                 schlubHosts.add(s);

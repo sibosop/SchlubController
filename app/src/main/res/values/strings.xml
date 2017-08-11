@@ -17,13 +17,13 @@
     <string name="returnHostRefreshMessage">Host List Refreshed</string>
     <string name="all">All Hosts</string>
     <string name="service">service:schlub.x</string>
-    <string name="volumeCmd">vol?val=</string>
-    <string name="phraseCmd">phrase?p=</string>
-    <string name="soundCmd">player?play=</string>
-    <string name="threadsCmd">threads?n=</string>
-    <string name="autoCmd">auto</string>
+    <string name="volumeCmd">Volume</string>
+    <string name="phraseCmd">Phrase</string>
+    <string name="soundCmd">Sound</string>
+    <string name="threadsCmd">Threads</string>
+    <string name="autoCmd">Auto</string>
     <string name="sLogLabel">Status Log</string>
-    <string name="manualCmd">manual</string>
+    <string name="manualCmd">Manual</string>
     <string name="neverSet">Never Set</string>
     <string name="threads">Threads: </string>
     <string name="speaker">Speaker: </string>

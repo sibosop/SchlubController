@@ -2,10 +2,13 @@ package com.sibosop.schlubcontroller;
 
 import android.util.Log;
 
+import com.google.gson.Gson;
+
+
+import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.io.BufferedReader;
-import java.io.DataOutputStream;
 import java.io.InputStreamReader;
 
 
@@ -34,33 +37,40 @@ class SclubRequest {
         String rval = "{}";
 
 
-        String url = "http://"+hostAddr+":"+port+"/"+cmd;
+        String url = "http://"+hostAddr+":"+port;
         try {
             URL obj = new URL(url);
             HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 
             // optional default is GET
-            con.setRequestMethod("GET");
-
+            con.setRequestMethod("POST");
+            con.setDoOutput(true);
+            con.setDoInput(true);
+            con.setRequestProperty("Content-Type", "application/json");
+            con.setRequestProperty("Accept", "application/json");
+            con.setRequestMethod("POST");
             //add request header
             con.setRequestProperty("User-Agent", USER_AGENT);
-
-            int responseCode = con.getResponseCode();
-            Log.i(tag,"Sending 'GET' request to URL : " + url);
-            //mainActivity.uiLog("Sending 'GET' request to URL : " + url);
-            System.out.println("Response Code : " + responseCode);
-
-            BufferedReader in = new BufferedReader(
-                    new InputStreamReader(con.getInputStream()));
-            String inputLine;
-            StringBuffer response = new StringBuffer();
-
-            while ((inputLine = in.readLine()) != null) {
-                response.append(inputLine);
+            Log.i(tag,"sending cmd:"+cmd);
+            OutputStreamWriter wr = new OutputStreamWriter(con.getOutputStream());
+            wr.write(cmd);
+            wr.flush();
+            int HttpResult = con.getResponseCode();
+            StringBuilder sb = new StringBuilder();
+            if (HttpResult == HttpURLConnection.HTTP_OK) {
+                BufferedReader br = new BufferedReader(
+                        new InputStreamReader(con.getInputStream(), "utf-8"));
+                String line = null;
+                while ((line = br.readLine()) != null) {
+                    sb.append(line + "\n");
+                }
+                br.close();
+                System.out.println("" + sb.toString());
+            } else {
+                System.out.println(con.getResponseMessage());
             }
-            in.close();
 
-            rval = response.toString();
+            rval = sb.toString();
         }
         catch (Exception e) {
             Log.e(tag,e.toString());
