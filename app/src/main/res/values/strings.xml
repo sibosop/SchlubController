@@ -30,4 +30,7 @@
     <string name="status">Status</string>
     <string name="control">Control</string>
     <string name="isMaster">Is Master</string>
+    <string name="chooseSound">Choose Sound</string>
+    <string name="cancel">Cancel</string>
+    <string name="set">Set</string>
 </resources>

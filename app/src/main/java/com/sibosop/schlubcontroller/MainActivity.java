@@ -2,14 +2,10 @@ package com.sibosop.schlubcontroller;
 
 
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.internal.widget.AdapterViewCompat;
-import android.text.Layout;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
@@ -17,27 +13,20 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.LinearLayout;
+import android.widget.GridView;
 import android.widget.ScrollView;
 import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
 import android.widget.TextView;
-import android.widget.Toast;
 import android.util.Log;
-
-import com.google.gson.Gson;
-
-import org.w3c.dom.Text;
+import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.Dictionary;
-import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
-
+    public SoundList soundList = new SoundList();
     private String tag;
     HashMap<String,SchlubHost> hostInfo = new HashMap<String,SchlubHost>();
     Object getHostFromType(String key, int type) {
@@ -256,9 +245,59 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             }
         });
-        setValueDialog = alert.create();
-        setValueDialog.show();
+        setStringDialog = alert.create();
+        setStringDialog.show();
     }
+
+    private AlertDialog soundChoiceDialog;
+    private void doSoundChoiceDialog(final String host) {
+        if ( soundChoiceDialog != null ) {
+            soundChoiceDialog.dismiss();
+            soundChoiceDialog = null;
+        }
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        // Get the layout inflater
+        LayoutInflater inflater = LayoutInflater.from(getApplicationContext());
+
+        final View view = inflater.inflate(R.layout.sound_list_dialog, null);
+        GridView gl = (GridView)view.findViewById(R.id.SoundList);
+        final TextView soundChoice = (TextView)view.findViewById(R.id.SoundChoice);
+        soundChoice.setText("");
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this
+                ,android.R.layout.simple_list_item_1
+                ,soundList.sounds);
+        gl.setAdapter(adapter);
+        gl.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            public void onItemClick(AdapterView<?> parent, View v,
+                                    int position, long id) {
+                soundChoice.setText(((TextView) v).getText());
+            }
+        });
+        // Inflate and set the layout for the dialog
+        // Pass null as the parent view because its going in the dialog layout
+        builder.setView(view)
+                // Add action buttons
+                .setPositiveButton(R.string.set, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int id) {
+                        // sign in the user ...
+                        String choice = soundChoice.getText().toString();
+                        if ( !choice.isEmpty()) {
+                            SchlubCmd endCmd = new SchlubCmd(getString(R.string.soundCmd));
+                            endCmd.putArg(choice);
+                            new SendCmdTask(MainActivity.this, host).execute(endCmd.getJson());
+                        }
+                    }
+                })
+                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                    }
+                });
+
+        soundChoiceDialog = builder.create();
+        soundChoiceDialog.show();
+    }
+
 
     public Handler handler = new Handler();
     // Define the code block to be executed
@@ -309,7 +348,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 return;
 
             case R.id.SoundButton:
-                doSetStringDialog(R.string.soundCmd,host);
+                try {
+                    if (soundList.isEmpty())
+                        new SoundListTask(this).execute().get();
+                    doSoundChoiceDialog(host);
+                } catch (Exception e){
+                    Log.i("get sound list",e.toString());
+                }
                 return;
 
             case R.id.ThreadsButton:
