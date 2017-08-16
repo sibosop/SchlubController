@@ -22,6 +22,7 @@
     <string name="soundCmd">Sound</string>
     <string name="threadsCmd">Threads</string>
     <string name="autoCmd">Auto</string>
+    <string name="soundEnableCmd">SoundEnable</string>
     <string name="sLogLabel">Status Log</string>
     <string name="manualCmd">Manual</string>
     <string name="neverSet">Never Set</string>
@@ -33,4 +34,7 @@
     <string name="chooseSound">Choose Sound</string>
     <string name="cancel">Cancel</string>
     <string name="set">Set</string>
+    <string name="done">Done</string>
+    <string name="enable">Enable Sound</string>
+    <string name="disable">Disable Sound</string>
 </resources>

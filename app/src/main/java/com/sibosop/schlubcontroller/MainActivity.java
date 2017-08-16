@@ -271,31 +271,78 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public void onItemClick(AdapterView<?> parent, View v,
                                     int position, long id) {
                 soundChoice.setText(((TextView) v).getText());
+                String choice = soundChoice.getText().toString();
+                if ( !choice.isEmpty()) {
+                    SchlubCmd endCmd = new SchlubCmd(getString(R.string.soundCmd));
+                    endCmd.putArg(choice);
+                    new SendCmdTask(MainActivity.this, host).execute(endCmd.getJson());
+                }
             }
         });
         // Inflate and set the layout for the dialog
         // Pass null as the parent view because its going in the dialog layout
         builder.setView(view)
                 // Add action buttons
-                .setPositiveButton(R.string.set, new DialogInterface.OnClickListener() {
+                .setPositiveButton(R.string.enable, new DialogInterface.OnClickListener()
+                {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which)
+                    {
+                        //Do nothing here because we override this button later to change the close behaviour.
+                        //However, we still need this because on older versions of Android unless we
+                        //pass a handler the button doesn't get instantiated
+                    }
+                })
+                .setNegativeButton(R.string.disable,new DialogInterface.OnClickListener()
+                {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which)
+                    {
+                        //Do nothing here because we override this button later to change the close behaviour.
+                        //However, we still need this because on older versions of Android unless we
+                        //pass a handler the button doesn't get instantiated
+                    }
+                })
+                .setNeutralButton(R.string.done,new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
                         // sign in the user ...
-                        String choice = soundChoice.getText().toString();
-                        if ( !choice.isEmpty()) {
-                            SchlubCmd endCmd = new SchlubCmd(getString(R.string.soundCmd));
-                            endCmd.putArg(choice);
-                            new SendCmdTask(MainActivity.this, host).execute(endCmd.getJson());
-                        }
-                    }
-                })
-                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
                     }
                 });
 
         soundChoiceDialog = builder.create();
         soundChoiceDialog.show();
+        //Overriding the handler immediately after show is probably a better approach than OnShowListener as described below
+        soundChoiceDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                String choice = soundChoice.getText().toString();
+                if (!choice.isEmpty()) {
+                    Toast.makeText(MainActivity.this, "enable:"+choice, Toast.LENGTH_SHORT).show();
+                    SchlubCmd endCmd = new SchlubCmd(getString(R.string.soundEnableCmd));
+                    endCmd.putArg(choice);
+                    endCmd.putArg("True");
+                    new SendCmdTask(MainActivity.this, getMaster()).execute(endCmd.getJson());
+                }
+            }
+        });
+        soundChoiceDialog.getButton(AlertDialog.BUTTON_NEGATIVE).setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v) {
+
+                String choice = soundChoice.getText().toString();
+                if (!choice.isEmpty()) {
+                    Toast.makeText(MainActivity.this, "disable:"+choice, Toast.LENGTH_SHORT).show();
+                    SchlubCmd endCmd = new SchlubCmd(getString(R.string.soundEnableCmd));
+                    endCmd.putArg(choice);
+                    endCmd.putArg("False");
+                    new SendCmdTask(MainActivity.this, getMaster()).execute(endCmd.getJson());
+                }
+            }
+        });
     }
 
 
@@ -349,7 +396,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             case R.id.SoundButton:
                 try {
-                    if (soundList.isEmpty())
+                   // if (soundList.isEmpty())
                         new SoundListTask(this).execute().get();
                     doSoundChoiceDialog(host);
                 } catch (Exception e){

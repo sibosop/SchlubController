@@ -143,6 +143,9 @@ public class HostRefreshTask extends AsyncTask<Context,String,HostInfo> {
                 android.R.layout.simple_spinner_item, update.ids);
         controlSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         controlHostSpinner.setAdapter(controlSpinnerAdapter);
+        controlHostSpinner.setSelection(update.ids.size()-1);
+
+
 
         pDialog.dismiss();
         mActivity.startHostInfoRefresh();
