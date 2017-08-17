@@ -29,6 +29,7 @@ import java.util.HashMap;
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     public SoundList soundList = new SoundList();
     private String tag;
+    public SoundList.ListItem currentItem = null;
     HashMap<String,SchlubHost> hostInfo = new HashMap<String,SchlubHost>();
     Object getHostFromType(String key, int type) {
         switch (type) {
@@ -261,10 +262,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         LayoutInflater inflater = LayoutInflater.from(getApplicationContext());
 
         final View view = inflater.inflate(R.layout.sound_list_dialog, null);
-        GridView gl = (GridView)view.findViewById(R.id.SoundList);
+        final GridView gl = (GridView)view.findViewById(R.id.SoundList);
         final TextView soundChoice = (TextView)view.findViewById(R.id.SoundChoice);
         soundChoice.setText("");
-        ArrayAdapter<SoundList.ListItem> adapter = new ArrayAdapter<SoundList.ListItem>(this
+        final ArrayAdapter<SoundList.ListItem> adapter = new ArrayAdapter<SoundList.ListItem>(this
                 ,android.R.layout.simple_list_item_1
                 ,soundList.sounds) {
             @Override
@@ -293,6 +294,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 if ( !choice.isEmpty()) {
                     SchlubCmd endCmd = new SchlubCmd(getString(R.string.soundCmd));
                     endCmd.putArg(choice);
+                    currentItem = adapter.getItem(position);
                     new SendCmdTask(MainActivity.this, host).execute(endCmd.getJson());
                 }
             }
@@ -309,6 +311,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     //Do nothing here because we override this button later to change the close behaviour.
                     //However, we still need this because on older versions of Android unless we
                     //pass a handler the button doesn't get instantiated
+                        /*
                     String choice = soundChoice.getText().toString();
                     if (!choice.isEmpty()) {
                         Toast.makeText(MainActivity.this, "enable:"+choice, Toast.LENGTH_SHORT).show();
@@ -316,7 +319,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         endCmd.putArg(choice);
                         endCmd.putArg("True");
                         new SendCmdTask(MainActivity.this, getMaster()).execute(endCmd.getJson());
-                    }
+                    } */
                     }
                 })
                 .setNegativeButton(R.string.disable,new DialogInterface.OnClickListener()
@@ -324,6 +327,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     @Override
                     public void onClick(DialogInterface dialog, int which)
                     {
+                    /*
                     String choice = soundChoice.getText().toString();
                     if (!choice.isEmpty()) {
                         Toast.makeText(MainActivity.this, "enable:"+choice, Toast.LENGTH_SHORT).show();
@@ -332,6 +336,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         endCmd.putArg("False");
                         new SendCmdTask(MainActivity.this, getMaster()).execute(endCmd.getJson());
                     }
+                    */
                     }
                 })
                 .setNeutralButton(R.string.done,new DialogInterface.OnClickListener() {
@@ -343,7 +348,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         soundChoiceDialog = builder.create();
         soundChoiceDialog.show();
-        /*
+
         //Overriding the handler immediately after show is probably a better approach than OnShowListener as described below
         soundChoiceDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener()
         {
@@ -356,7 +361,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     SchlubCmd endCmd = new SchlubCmd(getString(R.string.soundEnableCmd));
                     endCmd.putArg(choice);
                     endCmd.putArg("True");
+                    if ( currentItem != null )
+                        currentItem.enabled = "1";
                     new SendCmdTask(MainActivity.this, getMaster()).execute(endCmd.getJson());
+                    adapter.notifyDataSetChanged();
+                    gl.invalidate();
                 }
             }
         });
@@ -371,11 +380,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     SchlubCmd endCmd = new SchlubCmd(getString(R.string.soundEnableCmd));
                     endCmd.putArg(choice);
                     endCmd.putArg("False");
+                    if ( currentItem != null )
+                        currentItem.enabled = "0";
+
                     new SendCmdTask(MainActivity.this, getMaster()).execute(endCmd.getJson());
+                    adapter.notifyDataSetChanged();
+                    gl.invalidate();
                 }
             }
         });
-        */
+
     }
 
 
