@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -263,10 +264,27 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         GridView gl = (GridView)view.findViewById(R.id.SoundList);
         final TextView soundChoice = (TextView)view.findViewById(R.id.SoundChoice);
         soundChoice.setText("");
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this
+        ArrayAdapter<SoundList.ListItem> adapter = new ArrayAdapter<SoundList.ListItem>(this
                 ,android.R.layout.simple_list_item_1
-                ,soundList.sounds);
+                ,soundList.sounds) {
+            @Override
+            public View getView(int position, View convertView, ViewGroup parent) {
+                TextView view = (TextView)super.getView(position, convertView, parent);
+                String t = view.getText().toString();
+                String[] v = t.split(":");
+                Log.i(tag,"got text "+v[0]+" enabled:"+v[1]);
+                if ( v[1].equals("1"))
+                    view.setBackgroundColor(getResources().getColor(R.color.enabledColor));
+                else
+                    view.setBackgroundColor(getResources().getColor(R.color.disabledColor));
+
+
+                view.setText(v[0]);
+                return view;
+            }
+        };
         gl.setAdapter(adapter);
+
         gl.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View v,
                                     int position, long id) {
@@ -288,9 +306,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     @Override
                     public void onClick(DialogInterface dialog, int which)
                     {
-                        //Do nothing here because we override this button later to change the close behaviour.
-                        //However, we still need this because on older versions of Android unless we
-                        //pass a handler the button doesn't get instantiated
+                    //Do nothing here because we override this button later to change the close behaviour.
+                    //However, we still need this because on older versions of Android unless we
+                    //pass a handler the button doesn't get instantiated
+                    String choice = soundChoice.getText().toString();
+                    if (!choice.isEmpty()) {
+                        Toast.makeText(MainActivity.this, "enable:"+choice, Toast.LENGTH_SHORT).show();
+                        SchlubCmd endCmd = new SchlubCmd(getString(R.string.soundEnableCmd));
+                        endCmd.putArg(choice);
+                        endCmd.putArg("True");
+                        new SendCmdTask(MainActivity.this, getMaster()).execute(endCmd.getJson());
+                    }
                     }
                 })
                 .setNegativeButton(R.string.disable,new DialogInterface.OnClickListener()
@@ -298,9 +324,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     @Override
                     public void onClick(DialogInterface dialog, int which)
                     {
-                        //Do nothing here because we override this button later to change the close behaviour.
-                        //However, we still need this because on older versions of Android unless we
-                        //pass a handler the button doesn't get instantiated
+                    String choice = soundChoice.getText().toString();
+                    if (!choice.isEmpty()) {
+                        Toast.makeText(MainActivity.this, "enable:"+choice, Toast.LENGTH_SHORT).show();
+                        SchlubCmd endCmd = new SchlubCmd(getString(R.string.soundEnableCmd));
+                        endCmd.putArg(choice);
+                        endCmd.putArg("False");
+                        new SendCmdTask(MainActivity.this, getMaster()).execute(endCmd.getJson());
+                    }
                     }
                 })
                 .setNeutralButton(R.string.done,new DialogInterface.OnClickListener() {
@@ -312,6 +343,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         soundChoiceDialog = builder.create();
         soundChoiceDialog.show();
+        /*
         //Overriding the handler immediately after show is probably a better approach than OnShowListener as described below
         soundChoiceDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener()
         {
@@ -343,6 +375,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
             }
         });
+        */
     }
 
 
@@ -397,7 +430,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.SoundButton:
                 try {
                    // if (soundList.isEmpty())
-                        new SoundListTask(this).execute().get();
+                    new SoundListTask(this).execute().get();
                     doSoundChoiceDialog(host);
                 } catch (Exception e){
                     Log.i("get sound list",e.toString());
