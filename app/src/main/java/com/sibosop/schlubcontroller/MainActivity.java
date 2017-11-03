@@ -1,6 +1,7 @@
 package com.sibosop.schlubcontroller;
 
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Handler;
@@ -26,7 +27,7 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+public class MainActivity extends Activity implements View.OnClickListener {
     public SoundList soundList = new SoundList();
     private String tag;
     public SoundList.ListItem currentItem = null;
