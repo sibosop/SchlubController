@@ -14,6 +14,7 @@ class SchlubHost extends Object {
     String  phrase;
     Integer threads;
     String  speaker;
+    String  collection;
 
 
     SchlubHost() {
@@ -27,6 +28,7 @@ class SchlubHost extends Object {
         phrase = "";
         threads = 0;
         speaker = "";
+        collection = "";
     }
     @Override
     public String toString() {
@@ -40,6 +42,7 @@ class SchlubHost extends Object {
                 + " " + phrase
                 + " " + threads.toString()
                 + " " + speaker
+                + " " + collection
                 ;
     }
 }

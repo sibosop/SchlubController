@@ -29,6 +29,8 @@ import java.util.HashMap;
 
 public class MainActivity extends Activity implements View.OnClickListener {
     public SoundList soundList = new SoundList();
+    public CollectionList collectionList = new CollectionList();
+    public String currentCollection = null;
     private String tag;
     public SoundList.ListItem currentItem = null;
     HashMap<String,SchlubHost> hostInfo = new HashMap<String,SchlubHost>();
@@ -392,9 +394,88 @@ public class MainActivity extends Activity implements View.OnClickListener {
         });
 
     }
+    private AlertDialog collectionDialog;
+    private void doCollectionDialog(final String host) {
+        if ( collectionDialog != null ) {
+            collectionDialog.dismiss();
+            collectionDialog = null;
+        }
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        // Get the layout inflater
+        LayoutInflater inflater = LayoutInflater.from(getApplicationContext());
+
+        final View view = inflater.inflate(R.layout.collection_dialog, null);
+        final GridView gl = (GridView)view.findViewById(R.id.CollectionList);
+        final TextView collectionChoice = (TextView)view.findViewById(R.id.CollectionChoice);
+        collectionChoice.setText(currentCollection);
 
 
-    public Handler handler = new Handler();
+        final ArrayAdapter<String> adapter = new ArrayAdapter<String>(this
+                ,android.R.layout.simple_list_item_1
+                ,collectionList.collections ) {
+            @Override
+            public View getView(int position, View convertView, ViewGroup parent) {
+                TextView view = (TextView)super.getView(position, convertView, parent);
+                String t = view.getText().toString();
+                Log.i(tag,"got text "+t);
+                t = t.replace(".csv","");
+                view.setBackgroundColor(getResources().getColor(R.color.enabledColor));
+                view.setText(t);
+                return view;
+            }
+        };
+        gl.setAdapter(adapter);
+
+        gl.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            public void onItemClick(AdapterView<?> parent, View v,
+                                    int position, long id) {
+                collectionChoice.setText(((TextView) v).getText());
+                String choice = collectionChoice.getText().toString();
+                if ( !choice.isEmpty()) {
+                    String setVal = choice+".csv";
+                    SchlubCmd endCmd = new SchlubCmd(getString(R.string.collectionCmd));
+                    endCmd.putArg(setVal);
+                    currentCollection = adapter.getItem(position);
+                    final TextView collectionValue = (TextView)findViewById(R.id.CollectionValue);
+                    collectionValue.setText(choice);
+                    new SendCmdTask(MainActivity.this, host).execute(endCmd.getJson());
+                }
+            }
+        });
+        // Inflate and set the layout for the dialog
+        // Pass null as the parent view because its going in the dialog layout
+        builder.setView(view)
+                // Add action buttons
+                .setPositiveButton(R.string.dismiss, new DialogInterface.OnClickListener()
+                {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which)
+                    {
+                        Log.i(tag,"dismiss collection dialog");
+                        collectionDialog.dismiss();
+                        collectionDialog = null;
+
+                        //Do nothing here because we override this button later to change the close behaviour.
+                        //However, we still need this because on older versions of Android unless we
+                        //pass a handler the button doesn't get instantiated
+                        /*
+                    String choice = soundChoice.getText().toString();
+                    if (!choice.isEmpty()) {
+                        Toast.makeText(MainActivity.this, "enable:"+choice, Toast.LENGTH_SHORT).show();
+                        SchlubCmd endCmd = new SchlubCmd(getString(R.string.soundEnableCmd));
+                        endCmd.putArg(choice);
+                        endCmd.putArg("True");
+                        new SendCmdTask(MainActivity.this, getMaster()).execute(endCmd.getJson());
+                    } */
+                    }
+                });
+
+
+        collectionDialog = builder.create();
+        collectionDialog.show();
+    }
+
+    public Handler handler = null;
     // Define the code block to be executed
     private Runnable hostInfoRefresh = new Runnable() {
         @Override
@@ -418,10 +499,14 @@ public class MainActivity extends Activity implements View.OnClickListener {
     };
 
     public void stopHostInfoRefresh() {
-        handler.removeCallbacks(hostInfoRefresh);
+        if ( handler != null ) {
+            handler.removeCallbacks(hostInfoRefresh);
+            handler = null;
+        }
     }
     public void startHostInfoRefresh() {
         stopHostInfoRefresh();
+        handler = new Handler();
         handler.postDelayed(hostInfoRefresh,1000);
     }
 
@@ -449,6 +534,20 @@ public class MainActivity extends Activity implements View.OnClickListener {
                     doSoundChoiceDialog(host);
                 } catch (Exception e){
                     Log.i("get sound list",e.toString());
+                }
+                return;
+
+
+            case R.id.CollectionButton:
+                try {
+                    String master = getMaster();
+                    if (master.isEmpty())
+                        return;
+                    // if (soundList.isEmpty())
+                    new CollectionListTask(this).execute().get();
+                    doCollectionDialog(master);
+                } catch (Exception e){
+                    Log.i("get collection list",e.toString());
                 }
                 return;
 
@@ -497,6 +596,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
             ,R.id.UpgradeButton
             ,R.id.ShutdownButton
             ,R.id.RefreshButton
+            ,R.id.CollectionButton
     };
     private void setButtons() {
         for (int i = 0; i < clickList.length; ++i ) {

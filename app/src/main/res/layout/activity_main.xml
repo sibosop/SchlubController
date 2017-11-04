@@ -314,7 +314,20 @@
             android:layout_height="match_parent"
             android:background="@drawable/border3"
             android:orientation="vertical">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <TextView
+                    android:id="@+id/MasterLabel"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/master"
+                    android:textAlignment="center"
+                    android:textSize="24sp"
+                    android:textStyle="bold" />
 
+            </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -343,11 +356,11 @@
                     android:textStyle="bold" />
 
                 <TextView
-                    android:id="@+id/MasterLabel"
+                    android:id="@+id/MasterIpLabel"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="@string/master"
+                    android:text="@string/master_ip"
                     android:textAlignment="textEnd"
                     android:textSize="18sp"
                     android:textStyle="bold" />
@@ -361,6 +374,35 @@
                     android:textSize="18sp"
                     android:textStyle="bold" />
 
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/CollectionLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Collection: "
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/CollectionValue"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/neverSet"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <Button
+                    android:id="@+id/CollectionButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Set Collection" />
             </LinearLayout>
 
             <LinearLayout
