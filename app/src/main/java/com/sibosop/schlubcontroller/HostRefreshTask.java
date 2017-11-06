@@ -127,25 +127,7 @@ public class HostRefreshTask extends AsyncTask<Context,String,HostInfo> {
         mActivity.uiLog("onPostExecute" +
                 "" +
                 ""+ update.toString());
-        final TextView subnetView = (TextView)mActivity.findViewById(R.id.SubnetValue);
-        subnetView.setText(update.subnet);
-        HostInfo hostInfo = update.fuckingDeepCopy();
-
-        Spinner statusHostSpinner = (Spinner) mActivity.findViewById(R.id.StatusHostSpinner);
-        ArrayAdapter<String> statusSpinnerAdapter = new ArrayAdapter<String>(mActivity,
-                android.R.layout.simple_spinner_item, hostInfo.ids);
-        statusSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        statusHostSpinner.setAdapter(statusSpinnerAdapter);
-
-        update.ids.add("all");
-        Spinner controlHostSpinner = (Spinner) mActivity.findViewById(R.id.ControlHostSpinner);
-        ArrayAdapter<String> controlSpinnerAdapter = new ArrayAdapter<String>(mActivity,
-                android.R.layout.simple_spinner_item, update.ids);
-        controlSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        controlHostSpinner.setAdapter(controlSpinnerAdapter);
-        controlHostSpinner.setSelection(update.ids.size()-1);
-
-
+        mActivity.updateHostRefreshInfo(update);
 
         pDialog.dismiss();
         mActivity.startHostInfoRefresh();

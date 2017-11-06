@@ -24,6 +24,8 @@ import android.widget.TextView;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -33,6 +35,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
     public String currentCollection = null;
     private String tag;
     public SoundList.ListItem currentItem = null;
+    public HostInfo hostRefreshInfo = null;
     HashMap<String,SchlubHost> hostInfo = new HashMap<String,SchlubHost>();
     Object getHostFromType(String key, int type) {
         switch (type) {
@@ -485,13 +488,16 @@ public class MainActivity extends Activity implements View.OnClickListener {
             // Repeat this the same runnable code block again another 2 seconds
             // 'this' is referencing the Runnable object
             ArrayList<String> hosts = new ArrayList<String>();
-            if ( getMaster().isEmpty() ) {
+            String master = getMaster();
+            if ( master.isEmpty() ) {
                 hosts = getItemList("all");
             } else {
                 String host = getStatusHost();
                 if (!host.isEmpty()) {
                     hosts.add(host);
                 }
+                if ( host != master )
+                    hosts.add(master);
             }
             new GetHostInfoTask(MainActivity.this, hosts).execute();
             handler.postDelayed(this, 10000);
@@ -604,13 +610,42 @@ public class MainActivity extends Activity implements View.OnClickListener {
             b.setOnClickListener(this);
         }
     }
+    public void updateHostRefreshInfo(HostInfo update)
+    {
+        final TextView subnetView = (TextView) findViewById(R.id.SubnetValue);
+        subnetView.setText(update.subnet);
+       hostRefreshInfo = update.fuckingDeepCopy();
+
+        Spinner statusHostSpinner = (Spinner) findViewById(R.id.StatusHostSpinner);
+        ArrayAdapter<String> statusSpinnerAdapter = new ArrayAdapter<String>(this,
+                android.R.layout.simple_spinner_item, hostRefreshInfo.ids);
+        statusSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        statusHostSpinner.setAdapter(statusSpinnerAdapter);
+
+        update.ids.add("all");
+        Spinner controlHostSpinner = (Spinner) findViewById(R.id.ControlHostSpinner);
+        ArrayAdapter<String> controlSpinnerAdapter = new ArrayAdapter<String>(this,
+                android.R.layout.simple_spinner_item, update.ids);
+        controlSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        controlHostSpinner.setAdapter(controlSpinnerAdapter);
+        controlHostSpinner.setSelection(update.ids.size() - 1);
+    }
+    @Override
+    protected  void onSaveInstanceState (Bundle outState)
+    {
+        Log.i(tag,"saving instance");
+        Gson gson = new Gson();
+        String jsonHostRefreshInfo = gson.toJson(hostRefreshInfo,HostInfo.class);
+        Log.i(tag,"saving refresh host info");
+        outState.putString("hostRefreshInfo",jsonHostRefreshInfo);
+    }
+
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        new HostRefreshTask(this).execute(getBaseContext());
-
-
 
         runOnUiThread(new Runnable() {
             public void run() {
@@ -663,6 +698,18 @@ public class MainActivity extends Activity implements View.OnClickListener {
                 // TODO Auto-generated method stub
             }
         });
+
+        if ( savedInstanceState != null ) {
+            Log.i(tag, "restoring instance without running info refresh task");
+            Gson gson = new Gson();
+            String save = savedInstanceState.getString("hostRefreshInfo");
+            HostInfo tmp = gson.fromJson(save, HostInfo.class);
+            updateHostRefreshInfo(tmp);
+        } else {
+            new HostRefreshTask(this).execute(getBaseContext());
+        }
     }
+
+
 
 }
