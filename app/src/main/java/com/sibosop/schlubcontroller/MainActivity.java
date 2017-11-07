@@ -705,6 +705,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
             String save = savedInstanceState.getString("hostRefreshInfo");
             HostInfo tmp = gson.fromJson(save, HostInfo.class);
             updateHostRefreshInfo(tmp);
+            startHostInfoRefresh();
         } else {
             new HostRefreshTask(this).execute(getBaseContext());
         }
