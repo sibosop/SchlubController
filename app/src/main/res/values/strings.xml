@@ -12,14 +12,14 @@
     <string name="upgrade">Upgrade</string>
     <string name="sound">Sound: </string>
     <string name="auto">Auto</string>
-    <string name="phrase">Phrase: </string>
-    <string name="matag">MainActivity</string>
+    <string name="phrase">Phrase: </string><string name="matag">MainActivity</string>
     <string name="hostRefreshMessage">Refreshing Host List</string>
     <string name="returnHostRefreshMessage">Host List Refreshed</string>
     <string name="all">All Hosts</string>
     <string name="service">service:schlub.x</string>
     <string name="volumeCmd">Volume</string>
     <string name="phraseCmd">Phrase</string>
+    <string name="scatterCmd">PhraseScatter</string>
     <string name="soundCmd">Sound</string>
     <string name="collectionCmd">Collection</string>
     <string name="collectionListCmd">CollectionList</string>
@@ -42,4 +42,6 @@
     <string name="enable">Enable Sound</string>
     <string name="disable">Disable Sound</string>
     <string name="dismiss">Dismiss</string>
+    <string name="scatter">Scatter</string>
+    <string name="pscatter">Phrase Scatter</string>
 </resources>

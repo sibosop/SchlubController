@@ -11,7 +11,7 @@ import java.util.List;
 class HostInfo extends Object {
     String subnet ="";
 
-    ArrayList<String> ids = new ArrayList<>();
+    public ArrayList<String> ids = new ArrayList<>();
 
     @Override
     public String toString() {
@@ -40,4 +40,6 @@ class HostInfo extends Object {
             rval.ids.add(id);
         return rval;
     }
+
+
 }

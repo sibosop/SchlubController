@@ -5,7 +5,6 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Handler;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +13,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ScrollView;
@@ -23,6 +23,7 @@ import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 import android.util.Log;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import com.google.gson.Gson;
 
@@ -36,36 +37,36 @@ public class MainActivity extends Activity implements View.OnClickListener {
     private String tag;
     public SoundList.ListItem currentItem = null;
     public HostInfo hostRefreshInfo = null;
-    HashMap<String,SchlubHost> hostInfo = new HashMap<String,SchlubHost>();
+    HashMap<String,SchlubHost> hostMap = new HashMap<String,SchlubHost>();
     Object getHostFromType(String key, int type) {
         switch (type) {
             case R.string.volumeCmd:
-                return hostInfo.get(key).vol;
+                return hostMap.get(key).vol;
 
             case R.string.threadsCmd:
-                return hostInfo.get(key).threads;
+                return hostMap.get(key).threads;
 
             case R.string.soundCmd:
-                return hostInfo.get(key).sound;
+                return hostMap.get(key).sound;
 
             case R.string.phraseCmd:
-                return hostInfo.get(key).phrase;
+                return hostMap.get(key).phrase;
         }
         return 0;
     }
     void setHostFromType(String key, int type, Object val) {
         switch ( type ) {
             case R.string.volumeCmd:
-                hostInfo.get(key).vol = (Integer)val;
+                hostMap.get(key).vol = (Integer)val;
                 break;
             case R.string.threadsCmd:
-                hostInfo.get(key).threads = (Integer)val;
+                hostMap.get(key).threads = (Integer)val;
                 break;
             case R.string.soundCmd:
-                hostInfo.get(key).sound = (String)val;
+                hostMap.get(key).sound = (String)val;
                 break;
             case R.string.phraseCmd:
-                hostInfo.get(key).phrase = (String)val;
+                hostMap.get(key).phrase = (String)val;
                 break;
         }
     }
@@ -128,6 +129,55 @@ public class MainActivity extends Activity implements View.OnClickListener {
         return item;
     }
 
+    private AlertDialog toggleDialog;
+    private void doSetToggleDialog(final int  hostCmd,final String host) {
+        if ( toggleDialog != null ) {
+            toggleDialog.dismiss();
+            toggleDialog = null;
+        }
+        AlertDialog.Builder toggleBuilder = new AlertDialog.Builder(this);
+        toggleBuilder.setMessage("Enable Phrase Scatter?");
+        toggleBuilder.setCancelable(true);
+
+        toggleBuilder.setPositiveButton(
+                "Yes",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        SchlubCmd endCmd = new SchlubCmd(getString(hostCmd));
+                        endCmd.putArg("true");
+                        String setHost = host;
+                        if ( setHost.equals(getString(R.string.all)))
+                            setHost = "";
+
+                        new SendCmdTask(MainActivity.this,setHost).execute(endCmd.getJson());
+                        dialog.cancel();
+                    }
+                });
+
+        toggleBuilder.setNegativeButton(
+                "No",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        SchlubCmd endCmd = new SchlubCmd(getString(hostCmd));
+                        endCmd.putArg("false");
+                        String setHost = host;
+                        if ( setHost.equals(getString(R.string.all)))
+                            setHost = "";
+
+                        new SendCmdTask(MainActivity.this,setHost).execute(endCmd.getJson());
+                        dialog.cancel();
+                    }
+                });
+        toggleBuilder.setNeutralButton(
+                "Cancel",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                    }
+                });
+        toggleDialog = toggleBuilder.create();
+        toggleDialog.show();
+    }
     private AlertDialog setValueDialog;
     private void doSetValueDialog(final int  hostCmd,final String host) {
         if ( setValueDialog != null ) {
@@ -142,11 +192,11 @@ public class MainActivity extends Activity implements View.OnClickListener {
         Integer initValue = 0;
         Integer max = 100;
         if (  hostCmd == R.string.volumeCmd) {
-            initValue = hostInfo.get(host).vol;
+            initValue = hostMap.get(host).vol;
             max = 100;
         }
         else if ( hostCmd==R.string.threadsCmd) {
-            initValue = hostInfo.get(host).threads;
+            initValue = hostMap.get(host).threads;
             max = 10;
         }
 
@@ -192,9 +242,9 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
                 new SendCmdTask(MainActivity.this,setHost).execute(endCmd.getJson());
                 if ( hostCmd == R.string.volumeCmd)
-                    hostInfo.get(host).vol = Integer.parseInt(val);
+                    hostMap.get(host).vol = Integer.parseInt(val);
                 else if ( hostCmd == R.string.threadsCmd)
-                    hostInfo.get(host).threads = Integer.parseInt(val);
+                    hostMap.get(host).threads = Integer.parseInt(val);
 
             }
         });
@@ -533,6 +583,11 @@ public class MainActivity extends Activity implements View.OnClickListener {
                 doSetStringDialog(R.string.phraseCmd,host);
                 return;
 
+            case R.id.ScatterButton:
+                Log.i(tag,"scatter button");
+                doSetToggleDialog(R.string.scatterCmd,host);
+                return;
+
             case R.id.SoundButton:
                 try {
                    // if (soundList.isEmpty())
@@ -584,6 +639,8 @@ public class MainActivity extends Activity implements View.OnClickListener {
                 Log.i(tag,"click on host refresh");
                 new HostRefreshTask(this).execute(getBaseContext());
 
+
+
             default:
                 return;
         }
@@ -603,6 +660,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
             ,R.id.ShutdownButton
             ,R.id.RefreshButton
             ,R.id.CollectionButton
+            ,R.id.ScatterButton
     };
     private void setButtons() {
         for (int i = 0; i < clickList.length; ++i ) {
@@ -614,7 +672,9 @@ public class MainActivity extends Activity implements View.OnClickListener {
     {
         final TextView subnetView = (TextView) findViewById(R.id.SubnetValue);
         subnetView.setText(update.subnet);
-       hostRefreshInfo = update.fuckingDeepCopy();
+        hostRefreshInfo = update.fuckingDeepCopy();
+        for ( String id : update.ids )
+            hostMap.put(id,new SchlubHost());
 
         Spinner statusHostSpinner = (Spinner) findViewById(R.id.StatusHostSpinner);
         ArrayAdapter<String> statusSpinnerAdapter = new ArrayAdapter<String>(this,
@@ -653,7 +713,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
             }
         });
 
-        hostInfo.put("all",new SchlubHost());
+        hostMap.put("all",new SchlubHost());
         setButtons();
         CheckBox autoPlay   = ( CheckBox ) findViewById( R.id.AutoPlay );
         autoPlay.setOnClickListener(new View.OnClickListener() {
@@ -671,6 +731,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
                 }
             }
         });
+
         final Spinner statusHostSpinner =  (Spinner) findViewById(R.id.StatusHostSpinner);
         statusHostSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override

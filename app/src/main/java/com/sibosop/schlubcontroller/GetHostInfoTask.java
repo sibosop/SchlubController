@@ -1,17 +1,13 @@
 package com.sibosop.schlubcontroller;
 
-import android.app.Activity;
 import android.os.AsyncTask;
 import android.util.Log;
-import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
-import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by brian on 7/24/17.
@@ -87,7 +83,10 @@ class GetHostInfoTask extends AsyncTask<Void,ArrayList<SchlubHost>,Boolean>{
             speakerValue.setText(s.speaker);
             final CheckBox masterCheckBox = (CheckBox) mActivity.findViewById(R.id.MasterCheckBox);
             masterCheckBox.setChecked(s.isMaster);
-            mActivity.hostInfo.put(s.id, s);
+            final CheckBox statusScatterCheckBox = (CheckBox) mActivity.findViewById(R.id.ScatterCheckBox);
+            statusScatterCheckBox
+                    .setChecked(s.phraseScatter);
+            mActivity.hostMap.put(s.id, s);
         } else {
             Log.i(tag,"ignoring non-status display host id:"+s.id);
         }

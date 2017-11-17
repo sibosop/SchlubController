@@ -21,6 +21,7 @@ public class SendCmdTask extends AsyncTask <String,String,Boolean> {
         tag = getClass().getSimpleName();
     }
 
+
     SendCmdTask(MainActivity mainActivity,String host_){
         mActivity = mainActivity;
         host = host_;
