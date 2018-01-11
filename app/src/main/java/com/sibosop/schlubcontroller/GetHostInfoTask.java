@@ -65,6 +65,8 @@ class GetHostInfoTask extends AsyncTask<Void,ArrayList<SchlubHost>,Boolean>{
         autoPlay.setChecked(s.auto);
         final TextView collectionValue = (TextView) mActivity.findViewById(R.id.CollectionValue);
         collectionValue.setText(s.collection.replace(".csv",""));
+        final TextView maxEventsValue = (TextView) mActivity.findViewById(R.id.MaxEventsValue);
+        maxEventsValue.setText(s.maxEvents.toString());
     }
 
     private void updateServant(SchlubHost s){

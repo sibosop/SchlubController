@@ -21,6 +21,7 @@
     <string name="phraseCmd">Phrase</string>
     <string name="scatterCmd">PhraseScatter</string>
     <string name="soundCmd">Sound</string>
+    <string name="maxEventsCmd">MaxEvents</string>
     <string name="collectionCmd">Collection</string>
     <string name="collectionListCmd">CollectionList</string>
     <string name="threadsCmd">Threads</string>
@@ -44,4 +45,6 @@
     <string name="dismiss">Dismiss</string>
     <string name="scatter">Scatter</string>
     <string name="pscatter">Phrase Scatter</string>
+    <string name="maxEventsL">Max Events: </string>
+    <string name="maxEvents">Max Events</string>
 </resources>

@@ -16,6 +16,7 @@ class SchlubHost extends Object {
     String  speaker;
     String  collection;
     Boolean phraseScatter;
+    Integer maxEvents;
 
 
     SchlubHost() {
@@ -31,6 +32,7 @@ class SchlubHost extends Object {
         speaker = "";
         collection = "";
         phraseScatter = false;
+        maxEvents = 1;
     }
     @Override
     public String toString() {
@@ -46,6 +48,7 @@ class SchlubHost extends Object {
                 + " " + speaker
                 + " " + collection
                 + " " + phraseScatter.toString()
+                + " " + maxEvents.toString()
                 ;
     }
 }

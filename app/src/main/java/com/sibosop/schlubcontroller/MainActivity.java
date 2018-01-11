@@ -51,6 +51,9 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
             case R.string.phraseCmd:
                 return hostMap.get(key).phrase;
+
+            case R.string.maxEventsCmd:
+                return hostMap.get(key).maxEvents;
         }
         return 0;
     }
@@ -67,6 +70,10 @@ public class MainActivity extends Activity implements View.OnClickListener {
                 break;
             case R.string.phraseCmd:
                 hostMap.get(key).phrase = (String)val;
+                break;
+
+            case R.string.maxEventsCmd:
+                hostMap.get(key).maxEvents = (Integer)val;
                 break;
         }
     }
@@ -199,6 +206,10 @@ public class MainActivity extends Activity implements View.OnClickListener {
             initValue = hostMap.get(host).threads;
             max = 10;
         }
+        else if ( hostCmd == R.string.maxEventsCmd) {
+            initValue = hostMap.get(host).maxEvents;
+            max = hostMap.size();
+        }
 
         SeekBar seek=(SeekBar)setValueAlertView.findViewById(R.id.ValueSetSeekbar);
         seek.setProgress(initValue);
@@ -245,6 +256,8 @@ public class MainActivity extends Activity implements View.OnClickListener {
                     hostMap.get(host).vol = Integer.parseInt(val);
                 else if ( hostCmd == R.string.threadsCmd)
                     hostMap.get(host).threads = Integer.parseInt(val);
+                else if ( hostCmd == R.string.maxEventsCmd)
+                    hostMap.get(host).maxEvents = Integer.parseInt(val);
 
             }
         });
@@ -583,6 +596,13 @@ public class MainActivity extends Activity implements View.OnClickListener {
                 doSetStringDialog(R.string.phraseCmd,host);
                 return;
 
+            case R.id.MaxEventsButton:
+                String memaster = getMaster();
+                if (memaster.isEmpty())
+                    return;
+                doSetValueDialog(R.string.maxEventsCmd,memaster);
+                return;
+
             case R.id.ScatterButton:
                 Log.i(tag,"scatter button");
                 doSetToggleDialog(R.string.scatterCmd,host);
@@ -661,6 +681,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
             ,R.id.RefreshButton
             ,R.id.CollectionButton
             ,R.id.ScatterButton
+            ,R.id.MaxEventsButton
     };
     private void setButtons() {
         for (int i = 0; i < clickList.length; ++i ) {
