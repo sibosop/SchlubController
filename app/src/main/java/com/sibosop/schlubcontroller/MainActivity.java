@@ -78,7 +78,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
         }
     }
 
-    MainActivity() {
+    public MainActivity() {
         super();
         tag = this.getClass().getSimpleName();
     }
