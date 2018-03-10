@@ -361,8 +361,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
                 soundChoice.setText(((TextView) v).getText());
                 String choice = soundChoice.getText().toString();
                 if ( !choice.isEmpty()) {
-                    SchlubCmd endCmd = new SchlubCmd(getString(R.string.soundCmd));
-                    endCmd.putArg(choice);
+                    SchlubSoundCmd endCmd = new SchlubSoundCmd(choice);
                     currentItem = adapter.getItem(position);
                     new SendCmdTask(MainActivity.this, host).execute(endCmd.getJson());
                 }
